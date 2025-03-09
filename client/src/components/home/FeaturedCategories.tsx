@@ -19,10 +19,13 @@ export function FeaturedCategories() {
   }
 
   return (
-    <section className="py-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-display text-center mb-8">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <h2 className="text-3xl font-display text-center mb-3">
         Categorii de Produse
       </h2>
+      <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+        Descoperă gama noastră completă de produse și servicii pentru evenimente memorabile
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {categories?.map((category) => (
           <Link key={category.id} href={`/products?category=${category.slug}`}>

@@ -43,7 +43,7 @@ const HERO_SLIDES = [
 
 export function Hero() {
   return (
-    <section className="mt-20">
+    <section className="mt-16">
       <Carousel className="w-full relative" opts={{ loop: true }}>
         <CarouselContent>
           {HERO_SLIDES.map((slide, index) => (
@@ -55,8 +55,8 @@ export function Hero() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
               <div className="relative h-full flex items-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl w-full">
-                  <div className="text-center space-y-6">
-                    <h2 className="text-white text-lg md:text-xl font-light tracking-wide uppercase">
+                  <div className="text-center space-y-8">
+                    <h2 className="text-white text-lg md:text-xl font-light tracking-widest uppercase">
                       {slide.subtitle}
                     </h2>
                     <h1 className="text-4xl md:text-6xl lg:text-7xl text-white leading-tight font-display">
@@ -65,7 +65,7 @@ export function Hero() {
                     <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light">
                       {slide.description}
                     </p>
-                    <div className="pt-8 mb-12">
+                    <div className="pt-12 mb-16">
                       <Link href="/products">
                         <Button 
                           size="lg" 
