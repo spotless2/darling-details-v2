@@ -92,7 +92,7 @@ export class MemStorage implements IStorage {
         description: "Set lumânări elegante pentru centrul mesei",
         price: 150,
         categoryId: 1,
-        images: ["https://images.unsplash.com/photo-1602168915534-b14f4104515c?w=800&q=80"],
+        images: ["https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?w=800&q=80"],
         available: 10
       },
       {
@@ -108,7 +108,7 @@ export class MemStorage implements IStorage {
         description: "Mărturii elegante personalizate",
         price: 15,
         categoryId: 2,
-        images: ["https://images.unsplash.com/photo-1527090246415-a045c5c87da7?w=800&q=80"],
+        images: ["https://images.unsplash.com/photo-1595439972533-f0345ca7f6f4?w=800&q=80"],
         available: 100
       },
       {

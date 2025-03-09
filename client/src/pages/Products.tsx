@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { CategoryFilter } from "@/components/products/CategoryFilter";
+import { PageHeader } from "@/components/layout/PageHeader";
 import type { Category } from "@shared/schema";
 
 const pageVariants = {
@@ -23,56 +24,36 @@ export default function Products() {
 
   return (
     <motion.div 
-      className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+      variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      variants={pageVariants}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <motion.div 
-        className="text-center mb-16"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+      <PageHeader
+        title={currentCategory ? currentCategory.name : "Toate Produsele"}
+        description={currentCategory?.description}
       >
-        <motion.h1 
-          className="text-4xl font-display mb-4"
+        <motion.div 
+          className="mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.5 }}
         >
-          {currentCategory ? currentCategory.name : "Toate Produsele"}
-        </motion.h1>
-        {currentCategory && (
-          <motion.p 
-            className="text-gray-600 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            {currentCategory.description}
-          </motion.p>
-        )}
-      </motion.div>
+          <CategoryFilter />
+        </motion.div>
+      </PageHeader>
 
-      <motion.div 
-        className="mb-12"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <CategoryFilter />
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="min-h-[400px]"
-      >
-        <ProductGrid categoryId={currentCategory?.id} />
-      </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="min-h-[400px]"
+        >
+          <ProductGrid categoryId={currentCategory?.id} />
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
