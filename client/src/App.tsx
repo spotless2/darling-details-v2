@@ -18,17 +18,35 @@ function Router() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow">
         <AnimatePresence mode="wait">
-          <PageTransition key={location}>
-            <Switch>
-              <Route path="/" component={Home} />
-              <Route path="/products" component={Products} />
-              <Route path="/about" component={About} />
-              <Route path="/contact" component={Contact} />
-              <Route component={NotFound} />
-            </Switch>
-          </PageTransition>
+          <Switch location={location}>
+            <Route path="/">
+              <PageTransition>
+                <Home />
+              </PageTransition>
+            </Route>
+            <Route path="/products">
+              <PageTransition>
+                <Products />
+              </PageTransition>
+            </Route>
+            <Route path="/about">
+              <PageTransition>
+                <About />
+              </PageTransition>
+            </Route>
+            <Route path="/contact">
+              <PageTransition>
+                <Contact />
+              </PageTransition>
+            </Route>
+            <Route>
+              <PageTransition>
+                <NotFound />
+              </PageTransition>
+            </Route>
+          </Switch>
         </AnimatePresence>
       </main>
       <Footer />
