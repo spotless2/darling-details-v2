@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import type { Category } from "@shared/schema";
 
 export function CategoryFilter() {
@@ -23,36 +24,45 @@ export function CategoryFilter() {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-wrap gap-3"
+    >
       <Link href="/products">
-        <a
+        <motion.a
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className={cn(
-            "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+            "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-sm",
             location === "/products"
-              ? "bg-primary text-primary-foreground"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              ? "bg-primary text-primary-foreground shadow-primary/25"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
           )}
         >
           Toate
-        </a>
+        </motion.a>
       </Link>
       {categories?.map((category) => (
         <Link
           key={category.id}
           href={`/products?category=${category.slug}`}
         >
-          <a
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+              "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-sm",
               location === `/products?category=${category.slug}`
-                ? "bg-primary text-primary-foreground"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-primary text-primary-foreground shadow-primary/25"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
             )}
           >
             {category.name}
-          </a>
+          </motion.a>
         </Link>
       ))}
-    </div>
+    </motion.div>
   );
 }

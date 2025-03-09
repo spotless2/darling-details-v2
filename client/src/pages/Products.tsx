@@ -23,33 +23,53 @@ export default function Products() {
 
   return (
     <motion.div 
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+      className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
       initial="initial"
       animate="animate"
       exit="exit"
       variants={pageVariants}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <motion.h1 
-        className="text-4xl font-display mb-8"
+      <motion.div 
+        className="text-center mb-16"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        {currentCategory ? currentCategory.name : "Toate Produsele"}
-      </motion.h1>
+        <motion.h1 
+          className="text-4xl font-display mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          {currentCategory ? currentCategory.name : "Toate Produsele"}
+        </motion.h1>
+        {currentCategory && (
+          <motion.p 
+            className="text-gray-600 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            {currentCategory.description}
+          </motion.p>
+        )}
+      </motion.div>
+
       <motion.div 
-        className="mb-8"
+        className="mb-12"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.5 }}
       >
         <CategoryFilter />
       </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.6 }}
+        className="min-h-[400px]"
       >
         <ProductGrid categoryId={currentCategory?.id} />
       </motion.div>

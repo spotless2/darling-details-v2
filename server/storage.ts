@@ -92,7 +92,7 @@ export class MemStorage implements IStorage {
         description: "Set lumânări elegante pentru centrul mesei",
         price: 150,
         categoryId: 1,
-        images: ["https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800"],
+        images: ["https://images.unsplash.com/photo-1602168915534-b14f4104515c?w=800&q=80"],
         available: 10
       },
       {
@@ -100,7 +100,7 @@ export class MemStorage implements IStorage {
         description: "Vază din cristal pentru aranjamente florale",
         price: 200,
         categoryId: 1,
-        images: ["https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800"],
+        images: ["https://images.unsplash.com/photo-1584589167171-541ce45f1eea?w=800&q=80"],
         available: 5
       },
       {
@@ -108,7 +108,7 @@ export class MemStorage implements IStorage {
         description: "Mărturii elegante personalizate",
         price: 15,
         categoryId: 2,
-        images: ["https://images.unsplash.com/photo-1513278974582-3e1b4a4fa35e?w=800"],
+        images: ["https://images.unsplash.com/photo-1527090246415-a045c5c87da7?w=800&q=80"],
         available: 100
       },
       {
@@ -116,7 +116,7 @@ export class MemStorage implements IStorage {
         description: "Cabină foto profesională cu props și imprimantă",
         price: 1500,
         categoryId: 3,
-        images: ["https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800"],
+        images: ["https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=800&q=80"],
         available: 2
       }
     ];
