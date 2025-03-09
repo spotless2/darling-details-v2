@@ -18,6 +18,9 @@ import NotFound from "@/pages/not-found";
 // Admin pages
 import AdminLogin from "@/pages/admin/Login";
 import Dashboard from "@/pages/admin/Dashboard";
+import ProductsAdmin from "@/pages/admin/Products"; //Renamed to avoid conflict
+import AddProduct from "@/pages/admin/AddProduct";
+import Settings from "@/pages/admin/Settings";
 
 function Router() {
   const [location] = useLocation();
@@ -60,6 +63,15 @@ function Router() {
             </Route>
             <Route path="/admin/panel">
               <Dashboard />
+            </Route>
+            <Route path="/admin/panel/products">
+              <ProductsAdmin /> {/* Using renamed component */}
+            </Route>
+            <Route path="/admin/panel/products/new">
+              <AddProduct />
+            </Route>
+            <Route path="/admin/panel/settings">
+              <Settings />
             </Route>
 
             {/* 404 */}
