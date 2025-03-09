@@ -132,6 +132,33 @@ export class MemStorage implements IStorage {
         available: prod.available || null
       });
     });
+
+    // Add sample testimonials
+    const testimonials: InsertTestimonial[] = [
+      {
+        name: "Ana M.",
+        content: "Echipa Darling Details a transformat nunta noastră într-un vis devenit realitate. Decorațiunile au fost exact așa cum ne-am imaginat!",
+        rating: 5,
+        date: new Date("2024-02-15"),
+      },
+      {
+        name: "Ioan și Maria",
+        content: "Cabina foto a fost punctul de atracție al evenimentului. Toți invitații au fost încântați de calitatea fotografiilor și de recuzită.",
+        rating: 5,
+        date: new Date("2024-01-20"),
+      },
+      {
+        name: "Elena P.",
+        content: "Mărturiile personalizate au fost absolut minunate. Invitații noștri încă vorbesc despre cât de speciale au fost!",
+        rating: 5,
+        date: new Date("2024-03-01"),
+      },
+    ];
+
+    testimonials.forEach(testimonial => {
+      const id = this.currentIds.testimonial++;
+      this.testimonials.set(id, { ...testimonial, id, date: testimonial.date || new Date() });
+    });
   }
 
   async getCategories(): Promise<Category[]> {

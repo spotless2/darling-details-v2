@@ -43,21 +43,21 @@ const HERO_SLIDES = [
 
 export function Hero() {
   return (
-    <section className="mt-20 relative h-[calc(100vh-5rem)] min-h-[600px] max-h-[800px]">
-      <Carousel className="w-full h-full" opts={{ loop: true }}>
+    <section className="mt-20">
+      <Carousel className="w-full h-[calc(100vh-5rem)]" opts={{ loop: true }}>
         <CarouselContent>
           {HERO_SLIDES.map((slide, index) => (
-            <CarouselItem key={index} className="relative w-full h-full">
-              <div className="absolute inset-0 overflow-hidden">
+            <CarouselItem key={index} className="relative">
+              <div className="absolute inset-0">
                 <div
-                  className="absolute inset-0 bg-cover bg-center transform scale-105 animate-ken-burns"
+                  className="w-full h-[calc(100vh-5rem)] bg-cover bg-center transform scale-105 animate-ken-burns"
                   style={{ backgroundImage: `url(${slide.image})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
               </div>
-              <div className="relative h-full flex items-center">
+              <div className="relative h-[calc(100vh-5rem)] flex items-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl w-full">
-                  <div className="text-center space-y-6 pb-24">
+                  <div className="text-center space-y-6 pb-12">
                     <h2 className="text-white text-lg md:text-xl font-light tracking-wide uppercase">
                       {slide.subtitle}
                     </h2>

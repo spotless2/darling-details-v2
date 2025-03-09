@@ -19,7 +19,7 @@ export function FeaturedCategories() {
   }
 
   return (
-    <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className="py-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <h2 className="text-3xl font-display text-center mb-8">
         Categorii de Produse
       </h2>
