@@ -108,7 +108,7 @@ export class MemStorage implements IStorage {
         description: "Mărturii elegante personalizate",
         price: 15,
         categoryId: 2,
-        images: ["https://images.unsplash.com/photo-1595439972533-f0345ca7f6f4?w=800&q=80"],
+        images: ["https://images.unsplash.com/photo-1522682078546-47888fe04e81?w=800&q=80"],
         available: 100
       },
       {
