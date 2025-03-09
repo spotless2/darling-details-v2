@@ -58,7 +58,7 @@ export class MemStorage implements IStorage {
         name: "Mărturii", 
         slug: "marturii", 
         description: "Mărturii unice pentru invitați", 
-        image: "https://images.unsplash.com/photo-1513278974582-3e1b4a4fa35e?w=800" 
+        image: "https://images.unsplash.com/photo-1522682078546-47888fe04e81?w=800" 
       },
       { 
         name: "Cabină Foto", 
