@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   Carousel,
   CarouselContent,
@@ -55,21 +56,46 @@ export function Hero() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
               <div className="relative h-full flex items-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl w-full">
-                  <div className="text-center space-y-8">
-                    <h2 className="text-white text-lg md:text-xl font-light tracking-widest uppercase">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-center space-y-8"
+                  >
+                    <motion.h2 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="text-white text-lg md:text-xl font-light tracking-widest uppercase"
+                    >
                       {slide.subtitle}
-                    </h2>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl text-white leading-tight font-display">
+                    </motion.h2>
+                    <motion.h1 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      className="text-4xl md:text-6xl lg:text-7xl text-white leading-tight font-display"
+                    >
                       {slide.title}
-                    </h1>
-                    <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light">
+                    </motion.h1>
+                    <motion.p 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.6 }}
+                      className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light"
+                    >
                       {slide.description}
-                    </p>
-                    <div className="pt-12 mb-16">
+                    </motion.p>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.8 }}
+                      className="pt-12 mb-16"
+                    >
                       <Link href="/products">
                         <Button 
                           size="lg" 
-                          className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 mr-6"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 mr-6 transition-transform hover:scale-105"
                         >
                           Vezi Produsele
                         </Button>
@@ -78,13 +104,13 @@ export function Hero() {
                         <Button 
                           size="lg" 
                           variant="outline" 
-                          className="border-2 bg-transparent text-white hover:bg-white/10 text-lg px-8 py-6"
+                          className="border-2 bg-transparent text-white hover:bg-white/10 text-lg px-8 py-6 transition-transform hover:scale-105"
                         >
                           Contactează-ne
                         </Button>
                       </Link>
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
                 </div>
               </div>
             </CarouselItem>
