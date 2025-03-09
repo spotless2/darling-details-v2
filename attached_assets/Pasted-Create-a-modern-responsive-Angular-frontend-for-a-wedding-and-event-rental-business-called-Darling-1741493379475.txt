@@ -1,0 +1,79 @@
+Create a modern, responsive Angular frontend for a wedding and event rental business called "Darling Details". The website should be in Romanian and implement the following specifications:
+
+Technical Requirements:
+
+- Built with Angular (latest stable version)
+
+- Implement Angular routing for navigation between pages
+
+- Use Angular components for reusable UI elements
+
+- Implement responsive design with Angular Material or Bootstrap
+
+- Optimize for performance and SEO
+
+- Include proper TypeScript typing
+
+Pages Structure:
+
+1. Homepage (Acasă):
+
+   - Hero section with carousel/slider showcasing premium rental items
+
+   - Brief introduction section with call-to-action buttons
+
+   - Featured categories section with images linking to product categories
+
+   - Testimonials component with client feedback
+
+   - Latest items or promotions section
+
+2. Products/Services (Produse):
+
+   - Category navigation component
+
+   - Product grid with filtering and sorting capabilities
+
+   - Individual product components displaying images, descriptions, and details
+
+   - Categories should include: Decorațiuni, Mărturii, Cabină Foto, and more
+
+   - Implement lazy loading for product images
+
+3. About Us (Despre Noi):
+
+   - Company story and mission statement
+
+   - Team section (if applicable)
+
+   - Timeline component showing company milestones
+
+   - Values and vision statements
+
+4. Contact (Contact):
+
+   - Interactive contact form with validation
+
+   - Google Maps integration
+
+   - Business information component (hours, phone, email, address)
+
+   - Social media links
+
+   - FAQ accordion (optional)
+
+Design Requirements:
+
+- Elegant, modern aesthetic suitable for a wedding/event business
+
+- Color scheme: Soft, romantic colors (pastels, whites, blush tones)
+
+- Consistent typography across the application
+
+- Smooth animations and transitions between sections
+
+- Mobile-first approach for responsive design
+
+- Loading states and error handling for asynchronous operations
+
+The frontend should be prepared to connect to a backend API (which will be implemented separately) for retrieving product data and submitting contact form information. But for start you can try using some mock data as I want to see the result of the page.
