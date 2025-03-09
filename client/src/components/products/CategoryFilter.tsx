@@ -6,7 +6,6 @@ import type { Category } from "@shared/schema";
 
 export function CategoryFilter() {
   const [location] = useLocation();
-  const currentCategorySlug = new URLSearchParams(location.split("?")[1]).get("category");
 
   const { data: categories, isLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -38,7 +37,7 @@ export function CategoryFilter() {
           whileTap={{ scale: 0.95 }}
           className={cn(
             "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-            !currentCategorySlug
+            location === "/products"
               ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
           )}
@@ -56,7 +55,7 @@ export function CategoryFilter() {
             whileTap={{ scale: 0.95 }}
             className={cn(
               "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-              currentCategorySlug === category.slug
+              location.includes(category.slug)
                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
             )}

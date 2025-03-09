@@ -17,7 +17,7 @@ const HERO_SLIDES = [
     description: "Transformăm locația nunții tale într-un spațiu de poveste cu decorațiuni atent selecționate",
   },
   {
-    image: "https://images.unsplash.com/photo-1527090246415-a045c5c87da7?w=1600&h=900&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1600&h=900&fit=crop&q=80",
     title: "Mărturii Personalizate",
     subtitle: "Amintiri de Neuitat",
     description: "Oferă invitaților tăi mărturii unice care vor păstra vie amintirea acestei zile speciale",
