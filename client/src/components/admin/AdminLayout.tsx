@@ -41,7 +41,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile menu button */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b px-4 py-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b px-4 py-3">
         <div className="flex items-center">
           <Button
             variant="ghost"
@@ -61,62 +61,64 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="flex h-screen bg-gray-50">
-        {/* Sidebar for mobile */}
+        {/* Mobile sidebar */}
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsMobileMenuOpen(false)} />
+        )}
         <div
           className={cn(
-            "fixed inset-0 z-10 transform transition-transform duration-300 ease-in-out md:hidden",
+            "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out md:hidden",
             isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          <div className="relative flex h-full w-64">
-            {/* Sidebar content */}
-            <div className="flex flex-col flex-grow pt-20 overflow-y-auto bg-white border-r">
+          <div className="flex flex-col h-full bg-white border-r">
+            <div className="flex flex-col flex-grow pt-20 overflow-y-auto">
               <nav className="flex-1 px-2 space-y-1">
                 {NAV_ITEMS.map((item) => {
                   const Icon = item.icon;
                   const isActive = location === item.href;
                   return (
-                    <Link 
-                      key={item.href} 
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    <Button
+                      key={item.href}
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start text-sm font-medium",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-primary"
+                      )}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = item.href;
+                      }}
                     >
-                      <a
+                      <Icon
                         className={cn(
-                          "group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200",
+                          "mr-3 h-5 w-5",
                           isActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-gray-700 hover:bg-gray-50 hover:text-primary"
+                            ? "text-primary"
+                            : "text-gray-400 group-hover:text-primary"
                         )}
-                      >
-                        <Icon
-                          className={cn(
-                            "mr-3 flex-shrink-0 h-5 w-5 transition-colors duration-200",
-                            isActive
-                              ? "text-primary"
-                              : "text-gray-400 group-hover:text-primary"
-                          )}
-                        />
-                        {item.title}
-                      </a>
-                    </Link>
+                      />
+                      {item.title}
+                    </Button>
                   );
                 })}
               </nav>
-              <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-                <Link href="/admin">
-                  <a className="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 hover:text-primary w-full transition-all duration-200">
-                    <LogOut className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-primary transition-colors duration-200" />
-                    Logout
-                  </a>
-                </Link>
+              <div className="flex-shrink-0 border-t border-gray-200 p-4">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    window.location.href = "/admin";
+                  }}
+                >
+                  <LogOut className="mr-3 h-5 w-5 text-gray-400" />
+                  Logout
+                </Button>
               </div>
             </div>
-            {/* Close sidebar when clicking outside */}
-            <div 
-              className="absolute inset-0 -right-8 bg-black/50" 
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
           </div>
         </div>
 
@@ -137,9 +139,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                     const isActive = location === item.href;
                     return (
                       <Link key={item.href} href={item.href}>
-                        <a
+                        <Button
+                          variant="ghost"
                           className={cn(
-                            "group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200",
+                            "w-full justify-start text-sm font-medium",
                             isActive
                               ? "bg-primary/10 text-primary"
                               : "text-gray-700 hover:bg-gray-50 hover:text-primary"
@@ -147,24 +150,27 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                         >
                           <Icon
                             className={cn(
-                              "mr-3 flex-shrink-0 h-5 w-5 transition-colors duration-200",
+                              "mr-3 h-5 w-5",
                               isActive
                                 ? "text-primary"
                                 : "text-gray-400 group-hover:text-primary"
                             )}
                           />
                           {item.title}
-                        </a>
+                        </Button>
                       </Link>
                     );
                   })}
                 </nav>
-                <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+                <div className="flex-shrink-0 border-t border-gray-200 p-4">
                   <Link href="/admin">
-                    <a className="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 hover:text-primary w-full transition-all duration-200">
-                      <LogOut className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-primary transition-colors duration-200" />
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary"
+                    >
+                      <LogOut className="mr-3 h-5 w-5 text-gray-400" />
                       Logout
-                    </a>
+                    </Button>
                   </Link>
                 </div>
               </div>
