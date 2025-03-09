@@ -11,23 +11,28 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm z-50 border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link href="/">
-              <a className="text-2xl font-serif text-primary">
-                {SITE_CONFIG.name}
+              <a className="flex items-center space-x-2">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="font-serif text-2xl text-primary">D</span>
+                </div>
+                <span className="text-2xl font-serif text-gray-900">
+                  {SITE_CONFIG.name}
+                </span>
               </a>
             </Link>
           </div>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-6">
             {NAV_ITEMS.map((item) => (
               <Link key={item.href} href={item.href}>
                 <a
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 text-base font-medium transition-colors ${
                     location === item.href
-                      ? "text-primary"
+                      ? "text-primary border-b-2 border-primary"
                       : "text-gray-700 hover:text-primary"
                   }`}
                 >

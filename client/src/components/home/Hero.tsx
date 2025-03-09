@@ -10,12 +10,12 @@ import { Link } from "wouter";
 
 const HERO_SLIDES = [
   {
-    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1600&auto=format&fit=crop&q=80",
     title: "Decorațiuni Elegante pentru Evenimente Speciale",
     description: "Transformăm visele în realitate pentru nunțile și evenimentele tale memorabile",
   },
   {
-    image: "https://images.unsplash.com/photo-1470204963738-e7c0c9bc0e1d?w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1470204963738-e7c0c9bc0e1d?w=1600&auto=format&fit=crop&q=80",
     title: "Cabină Foto și Mărturii Unice",
     description: "Creează amintiri de neuitat cu serviciile noastre personalizate",
   },
@@ -32,24 +32,24 @@ export function Hero() {
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${slide.image})` }}
               >
-                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 bg-black/50" />
               </div>
-              <div className="relative h-full flex items-center justify-center">
-                <div className="text-center text-white px-4 max-w-3xl">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif mb-6">
+              <div className="relative h-full flex items-center">
+                <div className="mx-auto px-4 max-w-4xl text-center">
+                  <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
                     {slide.title}
                   </h1>
-                  <p className="text-lg md:text-xl mb-8 text-gray-100">
+                  <p className="text-lg md:text-xl mb-12 text-gray-100 max-w-2xl mx-auto">
                     {slide.description}
                   </p>
-                  <div className="space-x-4">
+                  <div className="space-x-6">
                     <Link href="/products">
-                      <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                      <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6">
                         Vezi Produsele
                       </Button>
                     </Link>
                     <Link href="/contact">
-                      <Button size="lg" variant="outline" className="bg-white/10 text-white hover:bg-white/20">
+                      <Button size="lg" variant="outline" className="bg-white/10 text-white hover:bg-white/20 text-lg px-8 py-6">
                         Contactează-ne
                       </Button>
                     </Link>
@@ -59,8 +59,8 @@ export function Hero() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex" />
-        <CarouselNext className="hidden md:flex" />
+        <CarouselPrevious className="hidden md:flex left-8" />
+        <CarouselNext className="hidden md:flex right-8" />
       </Carousel>
     </section>
   );
