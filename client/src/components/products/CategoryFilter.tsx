@@ -10,6 +10,8 @@ export function CategoryFilter() {
     queryKey: ["/api/categories"],
   });
 
+  const currentCategory = new URLSearchParams(location.split("?")[1]).get("category");
+
   if (isLoading) {
     return (
       <div className="space-x-2 animate-pulse">
@@ -36,7 +38,7 @@ export function CategoryFilter() {
           whileTap={{ scale: 0.95 }}
           className={cn(
             "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-            location === "/products"
+            !currentCategory
               ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
           )}
@@ -54,7 +56,7 @@ export function CategoryFilter() {
             whileTap={{ scale: 0.95 }}
             className={cn(
               "px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-              location === `/products?category=${category.slug}`
+              currentCategory === category.slug
                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
             )}

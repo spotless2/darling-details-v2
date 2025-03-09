@@ -17,7 +17,7 @@ const HERO_SLIDES = [
     description: "Transformăm locația nunții tale într-un spațiu de poveste cu decorațiuni atent selecționate",
   },
   {
-    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1600&h=900&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1527090246415-a045c5c87da7?w=1600&h=900&fit=crop&q=80",
     title: "Mărturii Personalizate",
     subtitle: "Amintiri de Neuitat",
     description: "Oferă invitaților tăi mărturii unice care vor păstra vie amintirea acestei zile speciale",
@@ -56,13 +56,13 @@ export function Hero() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
               <div className="relative h-full flex items-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl w-full">
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                     className="text-center space-y-8"
                   >
-                    <motion.h2 
+                    <motion.h2
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: 0.2 }}
@@ -70,7 +70,7 @@ export function Hero() {
                     >
                       {slide.subtitle}
                     </motion.h2>
-                    <motion.h1 
+                    <motion.h1
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: 0.4 }}
@@ -78,7 +78,7 @@ export function Hero() {
                     >
                       {slide.title}
                     </motion.h1>
-                    <motion.p 
+                    <motion.p
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: 0.6 }}
@@ -86,24 +86,24 @@ export function Hero() {
                     >
                       {slide.description}
                     </motion.p>
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: 0.8 }}
                       className="pt-12 mb-16"
                     >
                       <Link href="/products">
-                        <Button 
-                          size="lg" 
+                        <Button
+                          size="lg"
                           className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 mr-6 transition-transform hover:scale-105"
                         >
                           Vezi Produsele
                         </Button>
                       </Link>
                       <Link href="/contact">
-                        <Button 
-                          size="lg" 
-                          variant="outline" 
+                        <Button
+                          size="lg"
+                          variant="outline"
                           className="border-2 bg-transparent text-white hover:bg-white/10 text-lg px-8 py-6 transition-transform hover:scale-105"
                         >
                           Contactează-ne
