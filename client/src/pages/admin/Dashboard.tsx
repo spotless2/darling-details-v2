@@ -34,7 +34,7 @@ const STATS = [
   },
   {
     title: "Revenue",
-    value: "23,500 RON",
+    value: "23.5K",
     change: "+8.3%",
     icon: TrendingUp,
   },
