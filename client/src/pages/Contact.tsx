@@ -5,6 +5,7 @@ import { insertContactSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { SITE_CONFIG } from "@/lib/constants";
+import { motion } from "framer-motion";
 import {
   Form,
   FormControl,
@@ -17,6 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin } from "lucide-react";
+
+const contactItems = [
+  { icon: Phone, label: "Telefon", value: SITE_CONFIG.contact.phone },
+  { icon: Mail, label: "Email", value: SITE_CONFIG.contact.email },
+  { icon: MapPin, label: "Adresă", value: SITE_CONFIG.contact.address },
+];
 
 export default function Contact() {
   const { toast } = useToast();
@@ -52,48 +59,58 @@ export default function Contact() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div className="max-w-3xl mx-auto text-center mb-16">
-        <h1 className="text-4xl font-serif mb-6">Contactează-ne</h1>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+    >
+      <motion.div 
+        className="max-w-3xl mx-auto text-center mb-16"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <h1 className="text-4xl font-display mb-6">Contactează-ne</h1>
         <p className="text-lg text-gray-600">
           Suntem aici să te ajutăm să creezi evenimente memorabile.
         </p>
-      </div>
+      </motion.div>
 
       <div className="grid md:grid-cols-2 gap-12">
-        <div>
-          <h2 className="text-2xl font-serif mb-6">Informații de Contact</h2>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h2 className="text-2xl font-display mb-6">Informații de Contact</h2>
           <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <Phone className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">Telefon</p>
-                <p className="text-gray-600">{SITE_CONFIG.contact.phone}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <Mail className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">Email</p>
-                <p className="text-gray-600">{SITE_CONFIG.contact.email}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <MapPin className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">Adresă</p>
-                <p className="text-gray-600">{SITE_CONFIG.contact.address}</p>
-              </div>
-            </div>
+            {contactItems.map((item, index) => (
+              <motion.div 
+                key={index}
+                className="flex items-center gap-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                whileHover={{ x: 5 }}
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <item.icon className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium">{item.label}</p>
+                  <p className="text-gray-600">{item.value}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
-          <div className="mt-8 aspect-video rounded-lg overflow-hidden">
+          <motion.div 
+            className="mt-8 aspect-video rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.8444388087937!2d26.1025!3d44.4268!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDTCsDI1JzM2LjUiTiAyNsKwMDYnMDkuMCJF!5e0!3m2!1sen!2sro!4v1635789012345!5m2!1sen!2sro"
               width="100%"
@@ -101,12 +118,17 @@ export default function Contact() {
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
+              className="grayscale hover:grayscale-0 transition-all duration-300"
             />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div>
-          <h2 className="text-2xl font-serif mb-6">Trimite-ne un Mesaj</h2>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <h2 className="text-2xl font-display mb-6">Trimite-ne un Mesaj</h2>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
@@ -178,15 +200,15 @@ export default function Contact() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full transition-transform hover:scale-105"
                 disabled={mutation.isPending}
               >
                 {mutation.isPending ? "Se trimite..." : "Trimite Mesajul"}
               </Button>
             </form>
           </Form>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
