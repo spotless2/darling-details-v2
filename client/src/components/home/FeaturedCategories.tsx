@@ -19,8 +19,8 @@ export function FeaturedCategories() {
   }
 
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-serif text-center mb-10">
+    <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <h2 className="text-3xl font-display text-center mb-8">
         Categorii de Produse
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -36,7 +36,7 @@ export function FeaturedCategories() {
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center text-white">
-                      <h3 className="text-2xl font-serif mb-2">{category.name}</h3>
+                      <h3 className="text-2xl font-display mb-2">{category.name}</h3>
                       <p className="text-sm text-gray-200">{category.description}</p>
                     </div>
                   </div>
