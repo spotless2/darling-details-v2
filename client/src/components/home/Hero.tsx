@@ -44,20 +44,18 @@ const HERO_SLIDES = [
 export function Hero() {
   return (
     <section className="mt-20">
-      <Carousel className="w-full h-[calc(100vh-5rem)]" opts={{ loop: true }}>
+      <Carousel className="w-full relative" opts={{ loop: true }}>
         <CarouselContent>
           {HERO_SLIDES.map((slide, index) => (
-            <CarouselItem key={index} className="relative">
-              <div className="absolute inset-0">
-                <div
-                  className="w-full h-[calc(100vh-5rem)] bg-cover bg-center transform scale-105 animate-ken-burns"
-                  style={{ backgroundImage: `url(${slide.image})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
-              </div>
-              <div className="relative h-[calc(100vh-5rem)] flex items-center">
+            <CarouselItem key={index} className="relative w-full h-[calc(100vh-5rem)] overflow-hidden">
+              <div
+                className="absolute inset-0 bg-cover bg-center transform scale-105 animate-ken-burns"
+                style={{ backgroundImage: `url(${slide.image})` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30" />
+              <div className="relative h-full flex items-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl w-full">
-                  <div className="text-center space-y-6 pb-12">
+                  <div className="text-center space-y-6">
                     <h2 className="text-white text-lg md:text-xl font-light tracking-wide uppercase">
                       {slide.subtitle}
                     </h2>
@@ -67,7 +65,7 @@ export function Hero() {
                     <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light">
                       {slide.description}
                     </p>
-                    <div className="pt-8">
+                    <div className="pt-8 mb-12">
                       <Link href="/products">
                         <Button 
                           size="lg" 
