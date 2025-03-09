@@ -19,8 +19,8 @@ export function FeaturedCategories() {
   }
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-serif text-center mb-12">
+    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <h2 className="text-3xl font-serif text-center mb-10">
         Categorii de Produse
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

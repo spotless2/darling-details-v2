@@ -43,7 +43,7 @@ const HERO_SLIDES = [
 
 export function Hero() {
   return (
-    <section className="relative h-[80vh] min-h-[600px] max-h-[800px]">
+    <section className="relative h-[calc(100vh-5rem)] min-h-[600px] max-h-[800px]">
       <Carousel className="w-full h-full" opts={{ loop: true }}>
         <CarouselContent>
           {HERO_SLIDES.map((slide, index) => (
@@ -57,7 +57,7 @@ export function Hero() {
               </div>
               <div className="relative h-full flex items-center">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl w-full">
-                  <div className="text-center space-y-6">
+                  <div className="text-center space-y-6 pb-16">
                     <h2 className="text-white text-lg md:text-xl font-light tracking-wide">
                       {slide.subtitle}
                     </h2>
@@ -67,11 +67,11 @@ export function Hero() {
                     <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
                       {slide.description}
                     </p>
-                    <div className="pt-4 space-x-6">
+                    <div className="pt-8">
                       <Link href="/products">
                         <Button 
                           size="lg" 
-                          className="bg-white text-gray-900 hover:bg-white/90 text-lg px-8 py-6"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 mr-6"
                         >
                           Vezi Produsele
                         </Button>
@@ -92,8 +92,8 @@ export function Hero() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden md:flex left-8 text-white border-white hover:bg-white/20" />
-        <CarouselNext className="hidden md:flex right-8 text-white border-white hover:bg-white/20" />
+        <CarouselPrevious className="hidden md:flex left-12 text-white border-white hover:bg-white/20" />
+        <CarouselNext className="hidden md:flex right-12 text-white border-white hover:bg-white/20" />
       </Carousel>
     </section>
   );
