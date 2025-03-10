@@ -1,9 +1,21 @@
-// Base API URL - adjust if needed based on your environment
+// Base API URL - adjust based on environment
 console.log('Environment variables:', import.meta.env);
-const API_URL = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL 
-  : 'http://localhost:3000/api';
 
+// Create a function to determine the base URL
+const getBaseUrl = () => {
+  // First, check for the environment variable
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // If not available, determine dynamically from current location
+  // This helps in production when env vars might not be available
+  const { protocol, hostname, port } = window.location;
+  // If we're on the production server, use its API endpoint
+  return `${protocol}//${hostname}:${port}/api`;
+};
+
+const API_URL = getBaseUrl();
 console.log('Using API URL:', API_URL);
 
 // Create a fetch-based API client
