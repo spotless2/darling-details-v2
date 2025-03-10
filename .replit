@@ -1,5 +1,5 @@
 modules = ["nodejs-20", "bash", "web"]
-run = "npm run dev"
+run = "cd darling-details-frontend && npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
@@ -7,7 +7,7 @@ channel = "stable-24_05"
 
 [deployment]
 deploymentTarget = "cloudrun"
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "cd darling-details-frontend && npm run dev"]
 
 [[ports]]
 localPort = 5000
@@ -37,5 +37,5 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "cd darling-details-frontend && npm run dev"
 waitForPort = 5000
