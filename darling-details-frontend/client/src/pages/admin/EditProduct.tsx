@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { insertProductSchema } from "@shared/schema";
+import { updateProductSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,29 +24,64 @@ import {
 } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productService, categoryService } from "@/services";
-import { useLocation } from "wouter";
-import type { Category } from "@shared/schema";
-import { useState } from "react";
+import { useLocation, useParams } from "wouter";
+import { useEffect, useState } from "react";
 
-export default function AddProduct() {
+export default function EditProduct() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const params = useParams();
+  const productId = params.id;
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [currentImage, setCurrentImage] = useState<string>('');
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   
   const form = useForm({
-    resolver: zodResolver(insertProductSchema),
+    resolver: zodResolver(updateProductSchema),
     defaultValues: {
       name: "",
       description: "",
-      price: "",
-      categoryId: "",
-      images: [],
-      available: "",
+      price: 0,
+      categoryId: 0,
+      available: 0,
     },
   });
 
-  const { data: categoriesResponse } = useQuery({
+  // Fetch product data
+  const { data: productResponse, isLoading: isLoadingProduct } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: async () => {
+      return await productService.getProduct(productId);
+    },
+    enabled: !!productId,
+  });
+
+  // Set form values when product data is loaded
+  useEffect(() => {
+    if (productResponse && productResponse.data) {
+      const product = productResponse.data;
+      console.log("Product data loaded:", product);
+      
+      // Use setTimeout to ensure the form is fully initialized before setting values
+      setTimeout(() => {
+        form.reset({
+          name: product.name || "",
+          description: product.description || "",
+          price: parseFloat(product.price) || 0,
+          categoryId: parseInt(String(product.categoryId), 10) || 0,
+          available: parseInt(String(product.quantity || product.available || 0), 10) || 0,
+        });
+        
+        // Set current image
+        setCurrentImage(product.imageUrl || '');
+        setIsDataLoaded(true);
+      }, 0);
+    }
+  }, [productResponse, form]);
+
+  // Fetch categories
+  const { data: categoriesResponse, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       return await categoryService.getCategories();
@@ -55,65 +90,84 @@ export default function AddProduct() {
   
   const categories = categoriesResponse?.data || [];
 
+  // Update product mutation
   const mutation = useMutation({
     mutationFn: async (data: any) => {
       // Create FormData for image upload
       const formData = new FormData();
-      formData.append("name", data.name);
       
-      if (data.description) {
-        formData.append("description", data.description);
+      // Only add fields that have values to avoid overwriting with empty values
+      if (data.name) formData.append("name", data.name);
+      if (data.description !== undefined) formData.append("description", data.description);
+      
+      if (data.price !== undefined) {
+        const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
+        formData.append("price", String(price));
       }
       
-      // Ensure numeric values are sent as numbers
-      const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
-      formData.append("price", String(price));
+      if (data.categoryId !== undefined) {
+        const categoryId = typeof data.categoryId === 'string' ? 
+          parseInt(data.categoryId, 10) : data.categoryId;
+        formData.append("categoryId", String(categoryId));
+      }
       
-      const categoryId = typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId;
-      formData.append("categoryId", String(categoryId));
+      if (data.available !== undefined) {
+        const available = typeof data.available === 'string' ? 
+          parseInt(data.available, 10) : data.available;
+        formData.append("quantity", String(available));
+      }
       
-      const available = typeof data.available === 'string' ? parseInt(data.available, 10) : data.available;
-      formData.append("quantity", String(available));
-      
-      // Append any uploaded images
+      // Append image if there's a new one
       if (uploadedImages.length > 0) {
-        uploadedImages.forEach(image => {
-          formData.append('image', image); 
-        });
+        formData.append('image', uploadedImages[0]);
       }
       
-      return await productService.createProduct(formData);
+      console.log("Updating product with data:", Object.fromEntries(formData.entries()));
+      return await productService.updateProduct(productId, formData);
     },
     onSuccess: () => {
       toast({
         title: "Success",
-        description: "Product has been added successfully.",
+        description: "Product has been updated successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      form.reset();
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
       setUploadedImages([]);
       setLocation("/admin/panel/products");
     },
     onError: (error: any) => {
+      console.error("Update error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to add product. Please check your inputs and try again.",
+        description: error.message || "Failed to update product. Please check your inputs and try again.",
       });
     }
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      // Just use the first file for now as backend seems to expect a single image
       const newFiles = Array.from(e.target.files);
-      setUploadedImages([newFiles[0]]); // Store only the first image
+      setUploadedImages([newFiles[0]]);
     }
   };
 
   const onSubmit = (data: any) => {
     mutation.mutate(data);
   };
+
+  if (isLoadingProduct || isLoadingCategories || !isDataLoaded) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-pulse text-center">
+            <div className="h-8 bg-gray-200 rounded w-48 mb-4 mx-auto"></div>
+            <div className="h-4 bg-gray-200 rounded w-64 mx-auto"></div>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -123,8 +177,8 @@ export default function AddProduct() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-8">
-          <h1 className="text-2xl font-display mb-1">Add New Product</h1>
-          <p className="text-gray-500">Create a new product listing</p>
+          <h1 className="text-2xl font-display mb-1">Edit Product</h1>
+          <p className="text-gray-500">Update product information</p>
         </div>
 
         <div className="max-w-2xl">
@@ -242,12 +296,23 @@ export default function AddProduct() {
 
               <FormField
                 control={form.control}
-                name="images"
+                name="image"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Image</FormLabel>
                     <FormControl>
                       <div className="space-y-4">
+                        {currentImage && (
+                          <div className="mb-4">
+                            <p className="text-sm text-gray-500 mb-2">Current Image:</p>
+                            <img 
+                              src={currentImage}
+                              alt="Current product image"
+                              className="w-32 h-32 object-cover rounded-lg"
+                            />
+                          </div>
+                        )}
+                        
                         <Input
                           type="file"
                           accept="image/*"
@@ -257,24 +322,22 @@ export default function AddProduct() {
                         
                         {uploadedImages.length > 0 && (
                           <div className="flex flex-wrap gap-2 mt-2">
-                            {uploadedImages.map((file, index) => (
-                              <div key={index} className="relative">
-                                <img
-                                  src={URL.createObjectURL(file)}
-                                  alt={`Upload preview ${index}`}
-                                  className="h-20 w-20 object-cover rounded-lg"
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                                  onClick={() => {
-                                    setUploadedImages([]);
-                                  }}
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
+                            <div className="relative">
+                              <img
+                                src={URL.createObjectURL(uploadedImages[0])}
+                                alt="Upload preview"
+                                className="h-32 w-32 object-cover rounded-lg"
+                              />
+                              <button
+                                type="button"
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                                onClick={() => {
+                                  setUploadedImages([]);
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -284,13 +347,23 @@ export default function AddProduct() {
                 )}
               />
 
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={mutation.isPending}
-              >
-                {mutation.isPending ? "Adding Product..." : "Add Product"}
-              </Button>
+              <div className="flex gap-4">
+                <Button 
+                  type="submit" 
+                  className="flex-1"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? "Updating..." : "Update Product"}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => setLocation("/admin/panel/products")}
+                >
+                  Cancel
+                </Button>
+              </div>
             </form>
           </Form>
         </div>

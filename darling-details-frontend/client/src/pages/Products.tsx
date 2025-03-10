@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { CategoryFilter } from "@/components/products/CategoryFilter";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { categoryService } from "@/services";
 import type { Category } from "@shared/schema";
 
 const pageVariants = {
@@ -18,11 +19,17 @@ export default function Products() {
     "category",
   );
 
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
+  const { data: categoriesResponse, isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      return await categoryService.getCategories();
+    },
   });
+  
+  // Extract the actual categories array from the response
+  const categories = categoriesResponse?.data || [];
 
-  const currentCategory = categories?.find((c) => c.slug === categorySlug);
+  const currentCategory = categories.find((c) => c.slug === categorySlug);
 
   return (
     <motion.div

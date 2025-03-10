@@ -15,6 +15,10 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  // Get image URL or use fallback
+  const imageUrl = product.imageUrl || product.thumbnailUrl || '/placeholder-image.webp';
+  const fullImageUrl = product.imageUrl || imageUrl;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -27,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-0">
           <div className="relative h-64">
             <motion.img
-              src={product.images?.[0]}
+              src={imageUrl}
               alt={product.name}
               className="w-full h-full object-cover"
               loading="lazy"
@@ -82,7 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
               >
                 <div className="aspect-video overflow-hidden rounded-lg">
                   <motion.img
-                    src={product.images?.[0]}
+                    src={fullImageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover"
                     whileHover={{ scale: 1.05 }}
@@ -93,7 +97,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   <p className="text-gray-600">{product.description}</p>
                   <p className="text-lg font-semibold mt-4">{product.price} RON</p>
                   <p className="text-sm text-gray-500 mt-2">
-                    Disponibilitate: {product.available} bucăți
+                    Disponibilitate: {product.quantity || product.available || 0} bucăți
                   </p>
                 </div>
               </motion.div>

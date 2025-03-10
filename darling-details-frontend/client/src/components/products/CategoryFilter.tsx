@@ -3,15 +3,22 @@ import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { categoryService } from "@/services";
 import type { Category } from "@shared/schema";
 
 export function CategoryFilter() {
   const [, setLocation] = useLocation();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const { data: categories, isLoading } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
+  const { data: categoriesResponse, isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      return await categoryService.getCategories();
+    },
   });
+  
+  // Extract the actual categories array with a default empty array
+  const categories = categoriesResponse?.data || [];
 
   const handleCategoryClick = (slug: string | null) => {
     setActiveCategory(slug);
@@ -51,7 +58,7 @@ export function CategoryFilter() {
       >
         Toate
       </motion.button>
-      {categories?.map((category) => (
+      {categories.map((category) => (
         <motion.button
           key={category.id}
           onClick={() => handleCategoryClick(category.slug)}

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ProductCard } from "./ProductCard";
+import { productService } from "@/services";
 import type { Product } from "@shared/schema";
 
 interface ProductGridProps {
@@ -7,9 +8,17 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ categoryId }: ProductGridProps) {
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products", categoryId],
+  const { data: productsResponse, isLoading } = useQuery({
+    queryKey: ["products", { categoryId }],
+    queryFn: async () => {
+      // When categoryId is provided, filter products by category
+      const filters = categoryId ? { categoryId: categoryId.toString() } : {};
+      return await productService.getProducts(filters);
+    },
   });
+  
+  // Get the products array from the response, defaulting to empty array
+  const products = productsResponse?.data || [];
 
   if (isLoading) {
     return (
@@ -21,7 +30,7 @@ export function ProductGrid({ categoryId }: ProductGridProps) {
     );
   }
 
-  if (!products?.length) {
+  if (!products.length) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Nu am găsit produse în această categorie.</p>
