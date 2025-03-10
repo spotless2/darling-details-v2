@@ -41,21 +41,21 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile menu button */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b px-4 py-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b shadow-sm px-4 py-3">
         <div className="flex items-center">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="mr-2"
+            className="mr-2 border-gray-200 hover:bg-gray-100"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5 text-gray-700" />
           </Button>
           <div className="flex items-center">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
               <span className="text-lg font-display text-primary">DD</span>
             </div>
-            <span className="text-lg font-display">Admin Panel</span>
+            <span className="text-lg font-display text-gray-900">Admin Panel</span>
           </div>
         </div>
       </div>
