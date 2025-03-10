@@ -24,11 +24,14 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client", "src"),
+      "@": path.resolve(__dirname, "src"),
       "@shared": path.resolve(__dirname, "shared"),
     },
   },
-  root: path.resolve(__dirname, "client"),
+  server: {
+    host: '0.0.0.0',
+    port: 5000,
+  },
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
