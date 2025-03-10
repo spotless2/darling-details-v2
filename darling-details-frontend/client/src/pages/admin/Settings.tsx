@@ -1,27 +1,160 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { storeService } from "@/services";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Store, Mail, Phone } from "lucide-react";
+
+// Create a schema for the settings form
+const storeSettingsSchema = z.object({
+  storeName: z.string().min(2, "Store name must be at least 2 characters").max(100),
+  contactEmail: z.string().email("Must be a valid email"),
+  contactPhone: z.string().regex(
+    /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
+    "Phone number format is invalid"
+  ),
+  address: z.string().optional(),
+  description: z.string().optional(),
+  socialMedia: z.object({
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    twitter: z.string().optional()
+  }).optional(),
+});
+
+type FormValues = z.infer<typeof storeSettingsSchema>;
 
 export default function Settings() {
   const { toast } = useToast();
-  const [saving, setSaving] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleSave = () => {
-    setSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setSaving(false);
+  // Setup form with Zod validation
+  const form = useForm<FormValues>({
+    resolver: zodResolver(storeSettingsSchema),
+    defaultValues: {
+      storeName: "",
+      contactEmail: "",
+      contactPhone: "",
+      address: "",
+      description: "",
+      socialMedia: {
+        facebook: "",
+        instagram: "",
+        twitter: "",
+      },
+    },
+  });
+
+  // Fetch current store settings
+  const {
+    data: settingsResponse,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["store-settings"],
+    queryFn: async () => {
+      return await storeService.getStoreSettings();
+    },
+  });
+
+  // Update form when settings are loaded
+  useEffect(() => {
+    if (settingsResponse?.data) {
+      const settings = settingsResponse.data;
+      
+      form.reset({
+        storeName: settings.storeName || "",
+        contactEmail: settings.contactEmail || "",
+        contactPhone: settings.contactPhone || "",
+        address: settings.address || "",
+        description: settings.description || "",
+        socialMedia: {
+          facebook: settings.socialMedia?.facebook || "",
+          instagram: settings.socialMedia?.instagram || "",
+          twitter: settings.socialMedia?.twitter || "",
+        },
+      });
+    }
+  }, [settingsResponse, form]);
+
+  // Update store settings mutation
+  const mutation = useMutation({
+    mutationFn: (data: FormValues) => {
+      return storeService.updateStoreSettings(data);
+    },
+    onSuccess: () => {
       toast({
         title: "Success",
-        description: "Settings have been saved successfully.",
+        description: "Store settings updated successfully.",
       });
-    }, 1000);
+      queryClient.invalidateQueries({ queryKey: ["store-settings"] });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update settings. Please try again.",
+      });
+    },
+  });
+
+  // Handle form submission
+  const onSubmit = (data: FormValues) => {
+    mutation.mutate(data);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-64"></div>
+          <div className="h-4 bg-gray-200 rounded w-full max-w-md"></div>
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-12 bg-gray-200 rounded w-full max-w-md"></div>
+            ))}
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <AdminLayout>
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-red-500 mb-4">Error Loading Settings</h2>
+          <p className="text-gray-600 mb-6">{(error as any)?.message || "Failed to load store settings"}</p>
+          <Button 
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: ["store-settings"] });
+            }}
+          >
+            Try Again
+          </Button>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -31,78 +164,200 @@ export default function Settings() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-8">
-          <h1 className="text-2xl font-display mb-1">Settings</h1>
-          <p className="text-gray-500">Manage your store settings</p>
+          <h1 className="text-2xl font-display mb-1">Store Settings</h1>
+          <p className="text-gray-500">Manage your store's basic information</p>
         </div>
 
-        <div className="grid gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Store Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="storeName">Store Name</Label>
-                <Input
-                  id="storeName"
-                  defaultValue="Darling Details"
-                  className="max-w-md"
+        <div className="max-w-2xl">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Store Information */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <Store className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-medium">Store Information</h2>
+                </div>
+                <Separator />
+                
+                <FormField
+                  control={form.control}
+                  name="storeName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Store Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter store name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="storeEmail">Contact Email</Label>
-                <Input
-                  id="storeEmail"
-                  type="email"
-                  defaultValue="contact@darlingdetails.ro"
-                  className="max-w-md"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="storePhone">Contact Phone</Label>
-                <Input
-                  id="storePhone"
-                  defaultValue="+40 123 456 789"
-                  className="max-w-md"
-                />
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Currency Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
-                <Input
-                  id="currency"
-                  defaultValue="RON"
-                  className="max-w-md"
-                  disabled
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Store Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Short description of your store"
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="priceFormat">Price Format</Label>
-                <Input
-                  id="priceFormat"
-                  defaultValue="###,###.## RON"
-                  className="max-w-md"
-                />
-              </div>
-            </CardContent>
-          </Card>
 
-          <div className="flex justify-end mt-6">
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="min-w-[150px]"
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Store Address</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Your store's physical address"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Contact Information */}
+              <div className="space-y-6 pt-4">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-medium">Contact Information</h2>
+                </div>
+                <Separator />
+
+                <FormField
+                  control={form.control}
+                  name="contactEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email" 
+                          placeholder="contact@example.com" 
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contactPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="555-123-4567" 
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Social Media */}
+              <div className="space-y-6 pt-4">
+                <div className="flex items-center gap-2">
+                  <Phone className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-medium">Social Media</h2>
+                </div>
+                <Separator />
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="socialMedia.facebook"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Facebook</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Facebook URL" 
+                            {...field} 
+                            value={field.value || ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="socialMedia.instagram"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Instagram</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Instagram URL" 
+                            {...field}
+                            value={field.value || ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="socialMedia.twitter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Twitter</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Twitter URL" 
+                            {...field}
+                            value={field.value || ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button 
+                  type="submit" 
+                  className="flex-1"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? "Saving Changes..." : "Save Changes"}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.reset()}
+                  disabled={mutation.isPending}
+                >
+                  Reset
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
       </motion.div>
     </AdminLayout>

@@ -1,15 +1,49 @@
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Pencil, Trash2 } from "lucide-react";
 import { Link } from "wouter";
+import { productService } from "@/services";
+import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@shared/schema";
 
 export default function Products() {
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  const { data: productsResponse, isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      return await productService.getProducts();
+    },
   });
+  
+  const products = productsResponse?.data || [];
+
+  const deleteProductMutation = useMutation({
+    mutationFn: (id: string | number) => productService.deleteProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast({
+        title: "Success",
+        description: "Product has been deleted successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete product. Please try again.",
+      });
+    },
+  });
+
+  const handleDeleteProduct = (id: string | number) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      deleteProductMutation.mutate(id);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -69,14 +103,14 @@ export default function Products() {
                     <tr key={product.id} className="border-b hover:bg-gray-50">
                       <td className="py-4 px-6">
                         <img
-                          src={product.images?.[0]}
+                          src={product.thumbnailUrl || product.imageUrl || "/placeholder-image.webp"}
                           alt={product.name}
                           className="w-16 h-16 object-cover rounded-lg"
                         />
                       </td>
                       <td className="py-4 px-6">{product.name}</td>
                       <td className="py-4 px-6">{product.price} RON</td>
-                      <td className="py-4 px-6">{product.available}</td>
+                      <td className="py-4 px-6">{product.quantity || product.available || 0}</td>
                       <td className="py-4 px-6 text-right">
                         <div className="flex justify-end gap-2">
                           <Link href={`/admin/panel/products/edit/${product.id}`}>
@@ -89,6 +123,8 @@ export default function Products() {
                             size="sm"
                             variant="destructive"
                             className="flex items-center gap-1"
+                            onClick={() => handleDeleteProduct(product.id)}
+                            disabled={deleteProductMutation.isPending}
                           >
                             <Trash2 className="w-4 h-4" />
                             Delete

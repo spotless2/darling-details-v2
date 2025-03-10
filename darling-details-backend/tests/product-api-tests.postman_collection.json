@@ -1,0 +1,532 @@
+{
+	"info": {
+		"_postman_id": "f5e4d3c2-b1a0-9876-5432-1fedcba98765",
+		"name": "Darling Details - Product API Tests",
+		"description": "Collection for testing the product management system with image optimization",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Store the token if one is returned",
+									"const responseJson = pm.response.json();",
+									"if (responseJson.token) {",
+									"    pm.collectionVariables.set(\"authToken\", responseJson.token);",
+									"    console.log('Token saved:', responseJson.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@darlingdetails.com\",\n    \"password\": \"adminpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "login"]
+						},
+						"description": "Login to get auth token for testing protected endpoints"
+					}
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all products with pagination"
+					}
+				},
+				{
+					"name": "Get All Products (with filters)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products?name=test&minPrice=10&maxPrice=100&inStock=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"],
+							"query": [
+								{
+									"key": "name",
+									"value": "test"
+								},
+								{
+									"key": "minPrice",
+									"value": "10"
+								},
+								{
+									"key": "maxPrice",
+									"value": "100"
+								},
+								{
+									"key": "inStock",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Get filtered products"
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "1"]
+						},
+						"description": "Get a specific product by ID"
+					}
+				},
+				{
+					"name": "Create Product (with image)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"if (responseJson.data && responseJson.data.id) {",
+									"    pm.collectionVariables.set(\"latestProductId\", responseJson.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Test Product",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "29.99",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a test product with an optimized image",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "test-image.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Create a new product with image upload"
+					}
+				},
+				{
+					"name": "Create Product (without image)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Product No Image\",\n    \"price\": 19.99,\n    \"description\": \"This is a test product without an image\",\n    \"quantity\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Create a new product without image"
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Updated Product Name",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "39.99",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This product has been updated with a new image",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "15",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "new-test-image.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/{{latestProductId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "{{latestProductId}}"]
+						},
+						"description": "Update a product with new image"
+					}
+				},
+				{
+					"name": "Update Product (without image)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Just Updated Text\",\n    \"price\": 49.99,\n    \"quantity\": 25\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/{{latestProductId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "{{latestProductId}}"]
+						},
+						"description": "Update a product without changing the image"
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/{{latestProductId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "{{latestProductId}}"]
+						},
+						"description": "Delete a product by ID"
+					}
+				},
+				{
+					"name": "Verify Thumbnail Works",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{thumbnailUrl}}",
+							"host": ["{{baseUrl}}{{thumbnailUrl}}"]
+						},
+						"description": "Test that thumbnail URLs can be accessed"
+					}
+				},
+				{
+					"name": "Verify Full Image Works",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{imageUrl}}",
+							"host": ["{{baseUrl}}{{imageUrl}}"]
+						},
+						"description": "Test that full-size image URLs can be accessed"
+					}
+				}
+			]
+		},
+		{
+			"name": "Validation Tests",
+			"item": [
+				{
+					"name": "Create Invalid Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error response contains validation details\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"Validation error\");",
+									"    pm.expect(jsonData.errors).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"A\",\n    \"price\": -5,\n    \"quantity\": -10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Test validation errors"
+					}
+				},
+				{
+					"name": "Upload Invalid File Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should reject non-image file\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 415, 422, 500]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Test Product",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "29.99",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "test-document.txt"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Test uploading an invalid file type"
+					}
+				},
+				{
+					"name": "Access Protected Route Without Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Product\",\n    \"price\": 29.99\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"]
+						},
+						"description": "Test authentication requirement"
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "latestProductId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "imageUrl",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "thumbnailUrl",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
