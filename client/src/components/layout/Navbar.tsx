@@ -58,14 +58,14 @@ export function Navbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 backdrop-blur-xl shadow-lg">
             {NAV_ITEMS.map((item) => (
               <Link key={item.href} href={item.href}>
                 <a
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  className={`block px-3 py-2 rounded-md text-base font-medium text-shadow-sm ${
                     location === item.href
-                      ? "text-primary bg-primary/10"
-                      : "text-gray-700 hover:text-primary hover:bg-primary/5"
+                      ? "bg-primary/10 text-primary shadow-sm"
+                      : "text-gray-900 hover:text-primary hover:bg-gray-50"
                   }`}
                   onClick={() => setIsOpen(false)}
                 >

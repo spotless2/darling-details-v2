@@ -18,6 +18,13 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
       {/* Simple gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/5 to-transparent" />
 
+      {/* Decorative shapes */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/5 rounded-full" />
+        <div className="absolute top-1/2 -left-12 w-32 h-32 bg-primary/5 rounded-full transform -translate-y-1/2" />
+        <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-primary/5 rounded-full transform translate-y-1/2" />
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
         <motion.div
           className="relative"
@@ -58,9 +65,10 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
         </motion.div>
       </div>
 
-      {/* Subtle bottom border */}
+      {/* Bottom border with shadow */}
       <div className="absolute bottom-0 left-0 right-0">
         <div className="h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
+        <div className="h-4 bg-gradient-to-b from-black/5 to-transparent" />
       </div>
     </motion.div>
   );
