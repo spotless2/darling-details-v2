@@ -16,7 +16,7 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Simple gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/5 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
 
       {/* Decorative shapes */}
       <div className="absolute inset-0 overflow-hidden">
@@ -38,7 +38,9 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            {title}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/90">
+              {title}
+            </span>
           </motion.h1>
 
           {description && (
