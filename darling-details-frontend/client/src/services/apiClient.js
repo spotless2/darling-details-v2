@@ -10,9 +10,9 @@ const getBaseUrl = () => {
   
   // If not available, determine dynamically from current location
   // This helps in production when env vars might not be available
-  const { protocol, hostname, port } = window.location;
+  const { protocol, hostname } = window.location;
   // If we're on the production server, use its API endpoint
-  return `${protocol}//${hostname}:${port}/api`;
+  return `${protocol}//${hostname}:${3000}/api`;
 };
 
 const API_URL = getBaseUrl();
