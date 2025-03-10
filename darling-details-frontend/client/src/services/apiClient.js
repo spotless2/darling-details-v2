@@ -1,5 +1,10 @@
 // Base API URL - adjust if needed based on your environment
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+console.log('Environment variables:', import.meta.env);
+const API_URL = import.meta.env.VITE_API_URL 
+  ? import.meta.env.VITE_API_URL 
+  : 'http://localhost:3000/api';
+
+console.log('Using API URL:', API_URL);
 
 // Create a fetch-based API client
 const apiClient = {
