@@ -1,7 +1,20 @@
 import apiClient from './apiClient';
 
 // Get base URL for image paths
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000';
+const getImageBaseUrl = () => {
+  // First, check for the environment variable
+  if (import.meta.env.VITE_IMAGE_BASE_URL) {
+    return import.meta.env.VITE_IMAGE_BASE_URL;
+  }
+  
+  // If not available, determine dynamically from current location
+  // This helps in production when env vars might not be available
+  const { protocol, hostname } = window.location;
+  // If we're on the production server, use its API endpoint
+  return `${protocol}//${hostname}:${3000}`;
+};
+
+const IMAGE_BASE_URL = getImageBaseUrl();
 
 // Helper to format product data and fix image URLs
 const formatProduct = (product) => {
