@@ -10,8 +10,8 @@ const getImageBaseUrl = () => {
   // If not available, determine dynamically from current location
   // This helps in production when env vars might not be available
   const { protocol, hostname } = window.location;
-  // If we're on the production server, use its API endpoint
-  return `${protocol}//${hostname}:${3000}`;
+  // We want to use the nginx proxy path for images
+  return `${protocol}//${hostname}/uploads`;
 };
 
 const IMAGE_BASE_URL = getImageBaseUrl();
@@ -22,17 +22,17 @@ const formatProduct = (product) => {
   
   return {
     ...product,
-    // Ensure image URLs are complete
+    // Ensure image URLs are complete without port number
     imageUrl: product.imageUrl && !product.imageUrl.startsWith('http') 
-      ? `${IMAGE_BASE_URL}${product.imageUrl}` 
+      ? `${IMAGE_BASE_URL}${product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}` 
       : product.imageUrl,
     thumbnailUrl: product.thumbnailUrl && !product.thumbnailUrl.startsWith('http')
-      ? `${IMAGE_BASE_URL}${product.thumbnailUrl}` 
+      ? `${IMAGE_BASE_URL}${product.thumbnailUrl.startsWith('/') ? product.thumbnailUrl : `/${product.thumbnailUrl}`}` 
       : product.thumbnailUrl,
     // For backward compatibility with existing code expecting images array
     images: [
       product.imageUrl && !product.imageUrl.startsWith('http') 
-        ? `${IMAGE_BASE_URL}${product.imageUrl}` 
+        ? `${IMAGE_BASE_URL}${product.imageUrl.startsWith('/') ? product.imageUrl : `/${product.imageUrl}`}` 
         : product.imageUrl
     ]
   };
