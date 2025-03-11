@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 
+// Get base URL for image paths
 const getImageBaseUrl = () => {
   // First, check for the environment variable
   if (import.meta.env.VITE_IMAGE_BASE_URL) {
@@ -16,61 +17,6 @@ const getImageBaseUrl = () => {
 
 const IMAGE_BASE_URL = getImageBaseUrl();
 
-// Add image verification helper
-const verifyImageData = async (url) => {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        // Prevent gzip compression
-        'Accept-Encoding': 'identity'
-      },
-      // Bypass cache to get fresh data
-      cache: 'no-cache'
-    });
-
-    if (!response.ok) {
-      console.error('Image fetch failed:', {
-        status: response.status,
-        contentType: response.headers.get('content-type'),
-        contentLength: response.headers.get('content-length')
-      });
-      return false;
-    }
-
-    // Get the raw image data
-    const blob = await response.blob();
-    
-    // Log detailed blob info
-    console.debug('Image blob details:', {
-      url,
-      size: blob.size,
-      type: blob.type,
-      contentType: response.headers.get('content-type')
-    });
-
-    // Create a data URL to test the image
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        console.debug('Image loaded successfully:', {
-          url,
-          width: img.width,
-          height: img.height
-        });
-        resolve(true);
-      };
-      img.onerror = (error) => {
-        console.error('Image failed to load:', { url, error });
-        resolve(false);
-      };
-      img.src = URL.createObjectURL(blob);
-    });
-  } catch (error) {
-    console.error('Image verification failed:', error);
-    return false;
-  }
-};
-
 // Helper to format product data and fix image URLs
 const formatProduct = (product) => {
   if (!product) return product;
@@ -82,10 +28,7 @@ const formatProduct = (product) => {
     // Ensure clean path without duplicate /uploads
     const cleanPath = path.replace(/^\/?(uploads\/?)?/, '');
     const fullPath = `${IMAGE_BASE_URL}/uploads/${cleanPath}`;
-    
-    // Verify image data
-    verifyImageData(fullPath);
-    
+    console.debug('Generated image URL:', fullPath);
     return fullPath;
   };
 
