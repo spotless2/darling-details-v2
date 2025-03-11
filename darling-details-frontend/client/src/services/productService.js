@@ -1,6 +1,5 @@
 import apiClient from './apiClient';
 
-// Get base URL for image paths
 const getImageBaseUrl = () => {
   // First, check for the environment variable
   if (import.meta.env.VITE_IMAGE_BASE_URL) {
@@ -22,22 +21,71 @@ const formatProduct = (product) => {
   if (!product) return product;
   
   const getFullImagePath = (path) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
+    if (!path) {
+      console.debug('Empty image path provided');
+      return '';
+    }
+    
+    if (path.startsWith('http')) {
+      console.debug('Using absolute URL:', path);
+      return path;
+    }
     
     // Ensure clean path without duplicate /uploads
     const cleanPath = path.replace(/^\/?(uploads\/?)?/, '');
     const fullPath = `${IMAGE_BASE_URL}/uploads/${cleanPath}`;
-    console.debug('Generated image path:', fullPath);
+    
+    // Verify image URL
+    fetch(fullPath)
+      .then(response => {
+        console.debug('Image URL verification:', {
+          url: fullPath,
+          status: response.status,
+          contentType: response.headers.get('content-type'),
+          contentLength: response.headers.get('content-length'),
+          ok: response.ok
+        });
+        
+        // Check if response is actually an image
+        if (!response.headers.get('content-type')?.startsWith('image/')) {
+          console.error('Invalid content type for image:', response.headers.get('content-type'));
+        }
+        
+        // Log the response body for debugging
+        response.blob().then(blob => {
+          console.debug('Image blob:', {
+            size: blob.size,
+            type: blob.type
+          });
+        });
+      })
+      .catch(error => {
+        console.error('Image URL verification failed:', error);
+      });
+    
+    console.debug('Generated image path:', {
+      original: path,
+      cleaned: cleanPath,
+      final: fullPath
+    });
+    
     return fullPath;
   };
   
-  return {
+  const formatted = {
     ...product,
     imageUrl: getFullImagePath(product.imageUrl),
     thumbnailUrl: getFullImagePath(product.thumbnailUrl),
     images: [getFullImagePath(product.imageUrl)]
   };
+  
+  console.debug('Formatted product:', {
+    id: product.id,
+    originalImage: product.imageUrl,
+    formattedImage: formatted.imageUrl
+  });
+  
+  return formatted;
 };
 
 // Format an array of products
