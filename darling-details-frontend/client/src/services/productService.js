@@ -4,12 +4,15 @@ import apiClient from './apiClient';
 const getImageBaseUrl = () => {
   // First, check for the environment variable
   if (import.meta.env.VITE_IMAGE_BASE_URL) {
+    console.debug('Using env IMAGE_BASE_URL:', import.meta.env.VITE_IMAGE_BASE_URL);
     return import.meta.env.VITE_IMAGE_BASE_URL;
   }
   
   // If not available, determine dynamically from current location
   const { protocol, hostname } = window.location;
-  return `${protocol}//${hostname}`;
+  const baseUrl = `${protocol}//${hostname}`;
+  console.debug('Using dynamic IMAGE_BASE_URL:', baseUrl);
+  return baseUrl;
 };
 
 const IMAGE_BASE_URL = getImageBaseUrl();
@@ -21,9 +24,12 @@ const formatProduct = (product) => {
   const getFullImagePath = (path) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    // Remove any duplicate /uploads prefix
-    const cleanPath = path.replace(/^\/uploads\//, '');
-    return `${IMAGE_BASE_URL}/uploads/${cleanPath}`;
+    
+    // Ensure clean path without duplicate /uploads
+    const cleanPath = path.replace(/^\/?(uploads\/?)?/, '');
+    const fullPath = `${IMAGE_BASE_URL}/uploads/${cleanPath}`;
+    console.debug('Generated image path:', fullPath);
+    return fullPath;
   };
   
   return {
