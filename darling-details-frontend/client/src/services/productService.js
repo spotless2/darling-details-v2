@@ -16,76 +16,85 @@ const getImageBaseUrl = () => {
 
 const IMAGE_BASE_URL = getImageBaseUrl();
 
+// Add image verification helper
+const verifyImageData = async (url) => {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        // Prevent gzip compression
+        'Accept-Encoding': 'identity'
+      },
+      // Bypass cache to get fresh data
+      cache: 'no-cache'
+    });
+
+    if (!response.ok) {
+      console.error('Image fetch failed:', {
+        status: response.status,
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length')
+      });
+      return false;
+    }
+
+    // Get the raw image data
+    const blob = await response.blob();
+    
+    // Log detailed blob info
+    console.debug('Image blob details:', {
+      url,
+      size: blob.size,
+      type: blob.type,
+      contentType: response.headers.get('content-type')
+    });
+
+    // Create a data URL to test the image
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        console.debug('Image loaded successfully:', {
+          url,
+          width: img.width,
+          height: img.height
+        });
+        resolve(true);
+      };
+      img.onerror = (error) => {
+        console.error('Image failed to load:', { url, error });
+        resolve(false);
+      };
+      img.src = URL.createObjectURL(blob);
+    });
+  } catch (error) {
+    console.error('Image verification failed:', error);
+    return false;
+  }
+};
+
 // Helper to format product data and fix image URLs
 const formatProduct = (product) => {
   if (!product) return product;
   
   const getFullImagePath = (path) => {
-    if (!path) {
-      console.debug('Empty image path provided');
-      return '';
-    }
-    
-    if (path.startsWith('http')) {
-      console.debug('Using absolute URL:', path);
-      return path;
-    }
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
     
     // Ensure clean path without duplicate /uploads
     const cleanPath = path.replace(/^\/?(uploads\/?)?/, '');
     const fullPath = `${IMAGE_BASE_URL}/uploads/${cleanPath}`;
     
-    // Verify image URL
-    fetch(fullPath)
-      .then(response => {
-        console.debug('Image URL verification:', {
-          url: fullPath,
-          status: response.status,
-          contentType: response.headers.get('content-type'),
-          contentLength: response.headers.get('content-length'),
-          ok: response.ok
-        });
-        
-        // Check if response is actually an image
-        if (!response.headers.get('content-type')?.startsWith('image/')) {
-          console.error('Invalid content type for image:', response.headers.get('content-type'));
-        }
-        
-        // Log the response body for debugging
-        response.blob().then(blob => {
-          console.debug('Image blob:', {
-            size: blob.size,
-            type: blob.type
-          });
-        });
-      })
-      .catch(error => {
-        console.error('Image URL verification failed:', error);
-      });
-    
-    console.debug('Generated image path:', {
-      original: path,
-      cleaned: cleanPath,
-      final: fullPath
-    });
+    // Verify image data
+    verifyImageData(fullPath);
     
     return fullPath;
   };
-  
-  const formatted = {
+
+  return {
     ...product,
     imageUrl: getFullImagePath(product.imageUrl),
     thumbnailUrl: getFullImagePath(product.thumbnailUrl),
     images: [getFullImagePath(product.imageUrl)]
   };
-  
-  console.debug('Formatted product:', {
-    id: product.id,
-    originalImage: product.imageUrl,
-    formattedImage: formatted.imageUrl
-  });
-  
-  return formatted;
 };
 
 // Format an array of products
