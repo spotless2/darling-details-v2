@@ -67,3 +67,24 @@
     @apply backdrop-blur-sm bg-white/10;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: white !important;
+    color: initial !important;
+  }
+  
+  img {
+    filter: none !important;
+  }
+}
+
+/* Ensure light theme is always properly applied */
+html.light {
+  background-color: white !important;
+  color-scheme: light;
+}
+
+html.light img {
+  filter: none !important;
+}
