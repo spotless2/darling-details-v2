@@ -27,7 +27,15 @@ exports.getStoreSettings = async (req, res) => {
 // Create store settings
 exports.createStoreSettings = async (req, res) => {
   try {
-    const { storeName, contactEmail, contactPhone } = req.body;
+    const { 
+      storeName, 
+      storeDescription, 
+      storeAddress, 
+      contactEmail, 
+      contactPhone, 
+      facebookUrl, 
+      instagramUrl 
+    } = req.body;
     
     // Check if settings already exist
     const existingSettings = await StoreSettings.findOne();
@@ -41,8 +49,12 @@ exports.createStoreSettings = async (req, res) => {
     // Create new settings
     const settings = await StoreSettings.create({
       storeName,
+      storeDescription,
+      storeAddress,
       contactEmail,
-      contactPhone
+      contactPhone,
+      facebookUrl,
+      instagramUrl
     });
     
     res.status(201).json({
@@ -71,7 +83,15 @@ exports.createStoreSettings = async (req, res) => {
 // Update store settings
 exports.updateStoreSettings = async (req, res) => {
   try {
-    const { storeName, contactEmail, contactPhone } = req.body;
+    const { 
+      storeName, 
+      storeDescription, 
+      storeAddress, 
+      contactEmail, 
+      contactPhone, 
+      facebookUrl, 
+      instagramUrl 
+    } = req.body;
     
     // Find settings
     const settings = await StoreSettings.findOne();
@@ -83,10 +103,14 @@ exports.updateStoreSettings = async (req, res) => {
       });
     }
     
-    // Update settings
-    settings.storeName = storeName || settings.storeName;
-    settings.contactEmail = contactEmail || settings.contactEmail;
-    settings.contactPhone = contactPhone || settings.contactPhone;
+    // Update settings - only update fields that are provided
+    if (storeName !== undefined) settings.storeName = storeName;
+    if (storeDescription !== undefined) settings.storeDescription = storeDescription;
+    if (storeAddress !== undefined) settings.storeAddress = storeAddress;
+    if (contactEmail !== undefined) settings.contactEmail = contactEmail;
+    if (contactPhone !== undefined) settings.contactPhone = contactPhone;
+    if (facebookUrl !== undefined) settings.facebookUrl = facebookUrl;
+    if (instagramUrl !== undefined) settings.instagramUrl = instagramUrl;
     
     await settings.save();
     
@@ -113,10 +137,9 @@ exports.updateStoreSettings = async (req, res) => {
   }
 };
 
-// Delete store settings
+// Delete store settings - Keeping this unchanged
 exports.deleteStoreSettings = async (req, res) => {
   try {
-    // Find settings
     const settings = await StoreSettings.findOne();
     
     if (!settings) {
@@ -126,7 +149,6 @@ exports.deleteStoreSettings = async (req, res) => {
       });
     }
     
-    // Delete settings
     await settings.destroy();
     
     res.status(200).json({
@@ -143,7 +165,7 @@ exports.deleteStoreSettings = async (req, res) => {
   }
 };
 
-// Seed initial store settings if none exist
+// Updated seed function with the new fields
 exports.seedStoreSettings = async () => {
   try {
     const existingSettings = await StoreSettings.findOne();
@@ -151,8 +173,12 @@ exports.seedStoreSettings = async () => {
     if (!existingSettings) {
       await StoreSettings.create({
         storeName: 'Darling Details',
+        storeDescription: 'Your one-stop shop for all things beautiful',
+        storeAddress: 'Strada Exemplu 123, București, România',
         contactEmail: 'contact@darlingdetails.com',
-        contactPhone: '555-123-4567'
+        contactPhone: '555-123-4567',
+        facebookUrl: 'https://facebook.com/darlingdetails',
+        instagramUrl: 'https://instagram.com/darlingdetails'
       });
       console.log('Default store settings created');
     } else {

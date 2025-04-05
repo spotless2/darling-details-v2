@@ -4,8 +4,15 @@ import { Star } from "lucide-react";
 import type { Testimonial } from "@shared/schema";
 
 export function Testimonials() {
-  const { data: testimonials, isLoading } = useQuery<Testimonial[]>({
-    queryKey: ["/api/testimonials"],
+  const { data: testimonials, isLoading, error } = useQuery<Testimonial[]>({
+    queryKey: ["testimonials"],
+    queryFn: async () => {
+      const response = await fetch("/api/testimonials");
+      if (!response.ok) {
+        throw new Error("Failed to fetch testimonials");
+      }
+      return response.json();
+    },
   });
 
   if (isLoading) {
@@ -18,6 +25,14 @@ export function Testimonials() {
     );
   }
 
+  if (error || !testimonials) {
+    return (
+      <div className="p-6 text-center text-red-500">
+        Nu am putut încărca testimonialele. Vă rugăm să încercați din nou mai târziu.
+      </div>
+    );
+  }
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,7 +40,7 @@ export function Testimonials() {
           Ce Spun Clienții Noștri
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials?.map((testimonial) => (
+          {testimonials.map((testimonial) => (
             <Card key={testimonial.id}>
               <CardContent className="p-6">
                 <div className="flex mb-4">
@@ -41,7 +56,7 @@ export function Testimonials() {
                   <div>
                     <p className="font-medium text-gray-900">{testimonial.name}</p>
                     <p className="text-sm text-gray-500">
-                      {new Date(testimonial.date).toLocaleDateString("ro-RO")}
+                      {testimonial.date ? new Date(testimonial.date).toLocaleDateString("ro-RO") : "Data indisponibilă"}
                     </p>
                   </div>
                 </div>

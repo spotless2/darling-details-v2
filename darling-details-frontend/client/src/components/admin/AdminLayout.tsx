@@ -6,7 +6,9 @@ import {
   PlusCircle,
   Settings,
   LogOut,
-  Menu 
+  Menu,
+  Tag,
+  MessageSquare 
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +28,16 @@ const NAV_ITEMS = [
     title: "Add Product",
     href: "/admin/panel/products/new",
     icon: PlusCircle,
+  },
+  {
+    title: "Categories",
+    href: "/admin/panel/categories",
+    icon: Tag,
+  },
+  {
+    title: "Testimonials",
+    href: "/admin/panel/testimonials",
+    icon: MessageSquare,
   },
   {
     title: "Settings",

@@ -16,7 +16,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: "light", // Changed default from "system" to "light"
   setTheme: () => null,
 };
 
@@ -24,7 +24,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "light", // Changed default from "system" to "light"
   storageKey = "theme",
   ...props
 }: ThemeProviderProps) {
@@ -36,10 +36,8 @@ export function ThemeProvider({
         return storedTheme as Theme;
       }
       
-      // If not in local storage, check user system preferences
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        return "dark";
-      }
+      // Removed system preference detection
+      // Always default to light theme if nothing is stored
     }
     return defaultTheme;
   });
@@ -50,12 +48,10 @@ export function ThemeProvider({
     // Remove previous class values
     root.classList.remove("light", "dark");
     
-    // Apply the appropriate class
+    // Apply the appropriate class - modified to handle "system" as "light"
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
+      // Always use light theme for "system" setting
+      root.classList.add("light");
     } else {
       root.classList.add(theme);
     }
@@ -68,23 +64,8 @@ export function ThemeProvider({
     }
   }, [theme, storageKey]);
 
-  // Listen for system preference changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    
-    const handleChange = () => {
-      if (theme === "system") {
-        const root = window.document.documentElement;
-        root.classList.remove("light", "dark");
-        root.classList.add(
-          mediaQuery.matches ? "dark" : "light"
-        );
-      }
-    };
-    
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme]);
+  // Removed system preference change listener
+  // We don't need to listen to system changes anymore
 
   const value = {
     theme,

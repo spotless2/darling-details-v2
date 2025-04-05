@@ -21,21 +21,18 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Store, Mail, Phone } from "lucide-react";
 
-// Create a schema for the settings form
+// Updated schema to match API field names
 const storeSettingsSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters").max(100),
+  storeDescription: z.string().optional(),
+  storeAddress: z.string().optional(),
   contactEmail: z.string().email("Must be a valid email"),
   contactPhone: z.string().regex(
     /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
     "Phone number format is invalid"
   ),
-  address: z.string().optional(),
-  description: z.string().optional(),
-  socialMedia: z.object({
-    facebook: z.string().optional(),
-    instagram: z.string().optional(),
-    twitter: z.string().optional()
-  }).optional(),
+  facebookUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  instagramUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 type FormValues = z.infer<typeof storeSettingsSchema>;
@@ -44,20 +41,17 @@ export default function Settings() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Setup form with Zod validation
+  // Setup form with Zod validation and field names matching API
   const form = useForm<FormValues>({
     resolver: zodResolver(storeSettingsSchema),
     defaultValues: {
       storeName: "",
+      storeDescription: "",
+      storeAddress: "",
       contactEmail: "",
       contactPhone: "",
-      address: "",
-      description: "",
-      socialMedia: {
-        facebook: "",
-        instagram: "",
-        twitter: "",
-      },
+      facebookUrl: "",
+      instagramUrl: "",
     },
   });
 
@@ -74,22 +68,20 @@ export default function Settings() {
     },
   });
 
-  // Update form when settings are loaded
+  // Update form when settings are loaded - correctly mapped fields
   useEffect(() => {
     if (settingsResponse?.data) {
       const settings = settingsResponse.data;
+      console.log("Loaded settings:", settings); // Debug log
       
       form.reset({
         storeName: settings.storeName || "",
+        storeDescription: settings.storeDescription || "",
+        storeAddress: settings.storeAddress || "",
         contactEmail: settings.contactEmail || "",
         contactPhone: settings.contactPhone || "",
-        address: settings.address || "",
-        description: settings.description || "",
-        socialMedia: {
-          facebook: settings.socialMedia?.facebook || "",
-          instagram: settings.socialMedia?.instagram || "",
-          twitter: settings.socialMedia?.twitter || "",
-        },
+        facebookUrl: settings.facebookUrl || "",
+        instagramUrl: settings.instagramUrl || "",
       });
     }
   }, [settingsResponse, form]);
@@ -195,7 +187,7 @@ export default function Settings() {
 
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="storeDescription"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Store Description</FormLabel>
@@ -213,7 +205,7 @@ export default function Settings() {
 
                 <FormField
                   control={form.control}
-                  name="address"
+                  name="storeAddress"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Store Address</FormLabel>
@@ -273,7 +265,7 @@ export default function Settings() {
                 />
               </div>
 
-              {/* Social Media */}
+              {/* Social Media - Twitter field removed */}
               <div className="space-y-6 pt-4">
                 <div className="flex items-center gap-2">
                   <Phone className="h-5 w-5 text-primary" />
@@ -284,7 +276,7 @@ export default function Settings() {
                 <div className="grid gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="socialMedia.facebook"
+                    name="facebookUrl"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Facebook</FormLabel>
@@ -302,31 +294,13 @@ export default function Settings() {
 
                   <FormField
                     control={form.control}
-                    name="socialMedia.instagram"
+                    name="instagramUrl"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Instagram</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Instagram URL" 
-                            {...field}
-                            value={field.value || ''}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="socialMedia.twitter"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Twitter</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Twitter URL" 
                             {...field}
                             value={field.value || ''}
                           />

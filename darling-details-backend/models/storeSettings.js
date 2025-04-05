@@ -9,49 +9,35 @@ const StoreSettings = sequelize.define('StoreSettings', {
   },
   storeName: {
     type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: {
-        msg: 'Store name cannot be empty'
-      },
-      len: {
-        args: [2, 100],
-        msg: 'Store name must be between 2 and 100 characters'
-      }
-    }
+    allowNull: false
+  },
+  storeDescription: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  storeAddress: {
+    type: DataTypes.STRING,
+    allowNull: true
   },
   contactEmail: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      isEmail: {
-        msg: 'Please provide a valid email address'
-      }
+      isEmail: true
     }
   },
   contactPhone: {
     type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      is: {
-        args: /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
-        msg: 'Please provide a valid phone number'
-      }
-    }
+    allowNull: true
+  },
+  facebookUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  instagramUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
-}, {
-  timestamps: true,
-  tableName: 'store_settings',
-  modelName: 'StoreSettings'
 });
-
-// Initialize model
-const initModel = () => {
-  console.log('Store Settings model initialized');
-  return StoreSettings;
-};
-
-// Execute initialization
-initModel();
 
 module.exports = StoreSettings;

@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { insertContactSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { SITE_CONFIG } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { storeService } from "@/services";
 import {
   Form,
   FormControl,
@@ -18,16 +18,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin } from "lucide-react";
-
-const contactItems = [
-  { icon: Phone, label: "Telefon", value: SITE_CONFIG.contact.phone },
-  { icon: Mail, label: "Email", value: SITE_CONFIG.contact.email },
-  { icon: MapPin, label: "Adresă", value: SITE_CONFIG.contact.address },
-];
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
 
 export default function Contact() {
   const { toast } = useToast();
+  
+  // Fetch store settings for contact information
+  const { data: settingsResponse, isLoading, error } = useQuery({
+    queryKey: ["store-settings"],
+    queryFn: async () => await storeService.getStoreSettings(),
+  });
+  
+  const storeSettings = settingsResponse?.data;
+  
+  // Dynamic contact items based on API data
+  const getContactItems = () => {
+    if (!storeSettings) return [];
+    
+    return [
+      { icon: Phone, label: "Telefon", value: storeSettings.contactPhone },
+      { icon: Mail, label: "Email", value: storeSettings.contactEmail },
+      { icon: MapPin, label: "Adresă", value: storeSettings.storeAddress },
+    ];
+  };
+
   const form = useForm({
     resolver: zodResolver(insertContactSchema),
     defaultValues: {
@@ -78,26 +92,44 @@ export default function Contact() {
             transition={{ delay: 0.3 }}
           >
             <h2 className="text-2xl font-display mb-6">Informații de Contact</h2>
-            <div className="space-y-6">
-              {contactItems.map((item, index) => (
-                <motion.div 
-                  key={index}
-                  className="flex items-center gap-4"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  whileHover={{ x: 5 }}
-                >
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <item.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{item.label}</p>
-                    <p className="text-gray-600">{item.value}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            
+            {/* Loading state */}
+            {isLoading && (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="h-10 w-10 text-primary animate-spin" />
+              </div>
+            )}
+            
+            {/* Error state */}
+            {error && (
+              <div className="p-4 bg-red-50 text-red-800 rounded-md">
+                <p>Nu am putut încărca informațiile de contact. Vă rugăm să încercați din nou mai târziu.</p>
+              </div>
+            )}
+            
+            {/* Contact information */}
+            {!isLoading && !error && storeSettings && (
+              <div className="space-y-6">
+                {getContactItems().map((item, index) => (
+                  <motion.div 
+                    key={index}
+                    className="flex items-center gap-4"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                    whileHover={{ x: 5 }}
+                  >
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <item.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{item.label}</p>
+                      <p className="text-gray-600">{item.value}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
             <motion.div 
               className="mt-8 aspect-video rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
