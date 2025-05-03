@@ -311,10 +311,19 @@ export function FeaturedCategories() {
                       )}
                     </div>
 
-                    {/* Desktop: Products Grid (add this new section) */}
+                    {/* Desktop: Products Grid - Adaptive layout based on product count */}
                     <div className="hidden md:block flex-grow">
                       {group.products.length > 0 ? (
-                        <div className="grid grid-cols-3 gap-6 max-w-4xl mx-auto">
+                        <div
+                          className={`grid gap-6 max-w-4xl mx-auto ${
+                            // Dynamically set grid columns based on product count
+                            group.products.length === 1
+                              ? "grid-cols-1 max-w-md"
+                              : group.products.length === 2
+                              ? "grid-cols-2 max-w-2xl"
+                              : "grid-cols-3"
+                          }`}
+                        >
                           {group.products.slice(0, 3).map((product, index) => (
                             <motion.div
                               key={product.id}
