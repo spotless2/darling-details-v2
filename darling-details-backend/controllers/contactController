@@ -1,0 +1,17 @@
+const emailService = require('../services/emailService');
+
+exports.sendContactForm = async (req, res) => {
+  try {
+    const { name, email, phone, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Name, email, and message are required.' });
+    }
+
+    await emailService.sendContactForm({ name, email, phone, message });
+    res.status(200).json({ success: true, message: 'Mesajul a fost trimis cu succes!' });
+  } catch (error) {
+    console.error('Error sending contact form email:', error);
+    res.status(500).json({ error: 'A apărut o eroare la trimiterea mesajului.' });
+  }
+};

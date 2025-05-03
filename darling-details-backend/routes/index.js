@@ -8,6 +8,7 @@ const productRoutes = require('./productRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const testimonialRoutes = require('./testimonialRoutes');
 const footballMatchesRoutes = require('./footballMatchesRoutes');
+const contactRoutes = require('./contactRoutes');
 
 // Use routes
 router.use('/users', userRoutes);
@@ -16,4 +17,5 @@ router.use('/products', productRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/testimonials', testimonialRoutes)
 router.use('/football-matches', footballMatchesRoutes);
+router.use('/contact', contactRoutes);
 module.exports = router;

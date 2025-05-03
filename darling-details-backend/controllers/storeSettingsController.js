@@ -34,7 +34,8 @@ exports.createStoreSettings = async (req, res) => {
       contactEmail, 
       contactPhone, 
       facebookUrl, 
-      instagramUrl 
+      instagramUrl,
+      tiktokUrl 
     } = req.body;
     
     // Check if settings already exist
@@ -54,7 +55,8 @@ exports.createStoreSettings = async (req, res) => {
       contactEmail,
       contactPhone,
       facebookUrl,
-      instagramUrl
+      instagramUrl,
+      tiktokUrl
     });
     
     res.status(201).json({
@@ -90,7 +92,8 @@ exports.updateStoreSettings = async (req, res) => {
       contactEmail, 
       contactPhone, 
       facebookUrl, 
-      instagramUrl 
+      instagramUrl,
+      tiktokUrl 
     } = req.body;
     
     // Find settings
@@ -111,6 +114,7 @@ exports.updateStoreSettings = async (req, res) => {
     if (contactPhone !== undefined) settings.contactPhone = contactPhone;
     if (facebookUrl !== undefined) settings.facebookUrl = facebookUrl;
     if (instagramUrl !== undefined) settings.instagramUrl = instagramUrl;
+    if (tiktokUrl !== undefined) settings.tiktokUrl = tiktokUrl;
     
     await settings.save();
     

@@ -37,6 +37,10 @@ const StoreSettings = sequelize.define('StoreSettings', {
   instagramUrl: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  tiktokUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
