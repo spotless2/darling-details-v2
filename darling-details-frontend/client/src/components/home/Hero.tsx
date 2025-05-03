@@ -11,35 +11,36 @@ import { Link } from "wouter";
 
 const HERO_SLIDES = [
   {
-    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1600&h=900&fit=crop&q=80",
-    title: "Decorațiuni pentru Nunți",
-    subtitle: "Elegante și Rafinate",
-    description: "Transformăm locația nunții tale într-un spațiu de poveste cu decorațiuni atent selecționate",
-  },
-  {
     image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1600&h=900&fit=crop&q=80",
     title: "Mărturii Personalizate",
     subtitle: "Amintiri de Neuitat",
     description: "Oferă invitaților tăi mărturii unice care vor păstra vie amintirea acestei zile speciale",
   },
   {
-    image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1600&h=900&fit=crop&q=80",
-    title: "Cabină Foto Premium",
-    subtitle: "Momente Vesele Imortalizate",
-    description: "Surprinde bucuria și voia bună cu cabina noastră foto profesională",
-  },
-  {
     image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1600&h=900&fit=crop&q=80",
-    title: "Aranjamente Florale",
-    subtitle: "Prospețime și Culoare",
-    description: "Creăm aranjamente florale care adaugă eleganță și rafinament evenimentului tău",
+    title: "Decorațiuni pentru Evenimente",
+    subtitle: "Elegante și Rafinate",
+    description: "Transformăm locația evenimentului tale într-un spațiu de poveste cu decorațiuni atent selecționate",
   },
-  {
-    image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1600&h=900&fit=crop&q=80",
-    title: "Lumini și Efecte",
-    subtitle: "Atmosferă Magică",
-    description: "Iluminat ambiental și efecte speciale pentru o atmosferă de neuitat",
-  },
+
+  // {
+  //   image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1600&h=900&fit=crop&q=80",
+  //   title: "Cabină Foto Premium",
+  //   subtitle: "Momente Vesele Imortalizate",
+  //   description: "Surprinde bucuria și voia bună cu cabina noastră foto profesională",
+  // },
+  // {
+  //   image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1600&h=900&fit=crop&q=80",
+  //   title: "Aranjamente Florale",
+  //   subtitle: "Prospețime și Culoare",
+  //   description: "Creăm aranjamente florale care adaugă eleganță și rafinament evenimentului tău",
+  // },
+  // {
+  //   image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1600&h=900&fit=crop&q=80",
+  //   title: "Lumini și Efecte",
+  //   subtitle: "Atmosferă Magică",
+  //   description: "Iluminat ambiental și efecte speciale pentru o atmosferă de neuitat",
+  // },
 ];
 
 export function Hero() {

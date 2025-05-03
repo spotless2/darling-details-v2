@@ -23,16 +23,30 @@ import { Store, Mail, Phone } from "lucide-react";
 
 // Updated schema to match API field names
 const storeSettingsSchema = z.object({
-  storeName: z.string().min(2, "Store name must be at least 2 characters").max(100),
+  storeName: z
+    .string()
+    .min(2, "Store name must be at least 2 characters")
+    .max(100),
   storeDescription: z.string().optional(),
   storeAddress: z.string().optional(),
   contactEmail: z.string().email("Must be a valid email"),
-  contactPhone: z.string().regex(
-    /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
-    "Phone number format is invalid"
-  ),
-  facebookUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  instagramUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  contactPhone: z
+    .string()
+    .regex(
+      /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
+      "Phone number format is invalid"
+    ),
+  facebookUrl: z
+    .string()
+    .url("Must be a valid URL")
+    .optional()
+    .or(z.literal("")),
+  instagramUrl: z
+    .string()
+    .url("Must be a valid URL")
+    .optional()
+    .or(z.literal("")),
+  tiktokUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 type FormValues = z.infer<typeof storeSettingsSchema>;
@@ -52,6 +66,7 @@ export default function Settings() {
       contactPhone: "",
       facebookUrl: "",
       instagramUrl: "",
+      tiktokUrl: "",
     },
   });
 
@@ -72,8 +87,7 @@ export default function Settings() {
   useEffect(() => {
     if (settingsResponse?.data) {
       const settings = settingsResponse.data;
-      console.log("Loaded settings:", settings); // Debug log
-      
+
       form.reset({
         storeName: settings.storeName || "",
         storeDescription: settings.storeDescription || "",
@@ -82,6 +96,7 @@ export default function Settings() {
         contactPhone: settings.contactPhone || "",
         facebookUrl: settings.facebookUrl || "",
         instagramUrl: settings.instagramUrl || "",
+        tiktokUrl: settings.tiktokUrl || "",
       });
     }
   }, [settingsResponse, form]);
@@ -102,7 +117,8 @@ export default function Settings() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to update settings. Please try again.",
+        description:
+          error.message || "Failed to update settings. Please try again.",
       });
     },
   });
@@ -121,7 +137,10 @@ export default function Settings() {
           <div className="h-4 bg-gray-200 rounded w-full max-w-md"></div>
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded w-full max-w-md"></div>
+              <div
+                key={i}
+                className="h-12 bg-gray-200 rounded w-full max-w-md"
+              ></div>
             ))}
           </div>
         </div>
@@ -134,9 +153,13 @@ export default function Settings() {
     return (
       <AdminLayout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-red-500 mb-4">Error Loading Settings</h2>
-          <p className="text-gray-600 mb-6">{(error as any)?.message || "Failed to load store settings"}</p>
-          <Button 
+          <h2 className="text-2xl font-bold text-red-500 mb-4">
+            Error Loading Settings
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {(error as any)?.message || "Failed to load store settings"}
+          </p>
+          <Button
             onClick={() => {
               queryClient.invalidateQueries({ queryKey: ["store-settings"] });
             }}
@@ -170,7 +193,7 @@ export default function Settings() {
                   <h2 className="text-xl font-medium">Store Information</h2>
                 </div>
                 <Separator />
-                
+
                 <FormField
                   control={form.control}
                   name="storeName"
@@ -236,9 +259,9 @@ export default function Settings() {
                     <FormItem>
                       <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="contact@example.com" 
+                        <Input
+                          type="email"
+                          placeholder="contact@example.com"
                           {...field}
                         />
                       </FormControl>
@@ -254,10 +277,7 @@ export default function Settings() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="555-123-4567" 
-                          {...field}
-                        />
+                        <Input placeholder="555-123-4567" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -281,10 +301,10 @@ export default function Settings() {
                       <FormItem>
                         <FormLabel>Facebook</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="Facebook URL" 
-                            {...field} 
-                            value={field.value || ''}
+                          <Input
+                            placeholder="Facebook URL"
+                            {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -299,10 +319,28 @@ export default function Settings() {
                       <FormItem>
                         <FormLabel>Instagram</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="Instagram URL" 
+                          <Input
+                            placeholder="Instagram URL"
                             {...field}
-                            value={field.value || ''}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tiktokUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>TikTok</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="TikTok URL"
+                            {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -313,15 +351,15 @@ export default function Settings() {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="flex-1"
                   disabled={mutation.isPending}
                 >
                   {mutation.isPending ? "Saving Changes..." : "Save Changes"}
                 </Button>
-                
-                <Button 
+
+                <Button
                   type="button"
                   variant="outline"
                   onClick={() => form.reset()}

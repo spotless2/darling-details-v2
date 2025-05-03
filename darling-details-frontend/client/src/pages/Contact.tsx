@@ -138,7 +138,7 @@ export default function Contact() {
               transition={{ delay: 0.7 }}
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.8444388087937!2d26.1025!3d44.4268!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDTCsDI1JzM2LjUiTiAyNsKwMDYnMDkuMCJF!5e0!3m2!1sen!2sro!4v1635789012345!5m2!1sen!2sro"
+                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d899.705052314709!2d24.415240569670644!3d43.99892436292056!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDPCsDU5JzU2LjEiTiAyNMKwMjQnNTcuMiJF!5e1!3m2!1sen!2sro!4v1746236816831!5m2!1sen!2sro"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
