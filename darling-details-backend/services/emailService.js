@@ -8,7 +8,7 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
   host: 'smtp.migadu.com', // Or your email provider's SMTP server
   port: 587,
-  secure: true, // true for 465, false for other ports
+  secure: false, // true for 465, false for other ports
   auth: {
     user: 'contact@darlingdetails.ro',
     pass: process.env.EMAIL_PASSWORD, // Store this in env variables
