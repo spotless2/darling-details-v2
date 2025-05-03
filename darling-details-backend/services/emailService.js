@@ -7,7 +7,7 @@ dotenv.config();
 // Configure transport
 const transporter = nodemailer.createTransport({
   host: 'smtp.migadu.com', // Or your email provider's SMTP server
-  port: 465,
+  port: 587,
   secure: true, // true for 465, false for other ports
   auth: {
     user: 'contact@darlingdetails.ro',
