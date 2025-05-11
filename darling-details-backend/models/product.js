@@ -22,7 +22,7 @@ const Product = sequelize.define('Product', {
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
+    allowNull: true, // Making price optional
     validate: {
       isDecimal: {
         msg: 'Price must be a valid number'
@@ -39,7 +39,7 @@ const Product = sequelize.define('Product', {
   },
   quantity: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true, // Making quantity optional
     defaultValue: 0,
     validate: {
       isInt: {

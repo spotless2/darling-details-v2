@@ -15,7 +15,7 @@ exports.createProduct = async (req, res) => {
     // Build product object
     const productData = {
       name,
-      price,
+      price: price || null,
       description,
       quantity: quantity || 0,
       categoryId: categoryId || null
