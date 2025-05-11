@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { insertProductSchema } from "@shared/schema";
+import { z } from "zod"; // Import zod directly
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,16 @@ import { productService, categoryService } from "@/services";
 import { useLocation } from "wouter";
 import { useState } from "react";
 
+// Create a custom schema that doesn't require price and quantity
+const galleryItemSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  categoryId: z.union([z.string(), z.number()]).refine(val => !!val, {
+    message: "Category is required"
+  }),
+  images: z.any().optional()
+});
+
 export default function AddProduct() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -34,7 +44,8 @@ export default function AddProduct() {
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   
   const form = useForm({
-    resolver: zodResolver(insertProductSchema),
+    // Use our custom schema instead
+    resolver: zodResolver(galleryItemSchema),
     defaultValues: {
       name: "",
       description: "",
