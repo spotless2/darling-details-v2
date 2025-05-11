@@ -25,7 +25,6 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productService, categoryService } from "@/services";
 import { useLocation } from "wouter";
-import type { Category } from "@shared/schema";
 import { useState } from "react";
 
 export default function AddProduct() {
@@ -39,10 +38,8 @@ export default function AddProduct() {
     defaultValues: {
       name: "",
       description: "",
-      price: "",
       categoryId: "",
       images: [],
-      available: "",
     },
   });
 
@@ -65,15 +62,8 @@ export default function AddProduct() {
         formData.append("description", data.description);
       }
       
-      // Ensure numeric values are sent as numbers
-      const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
-      formData.append("price", String(price));
-      
       const categoryId = typeof data.categoryId === 'string' ? parseInt(data.categoryId, 10) : data.categoryId;
       formData.append("categoryId", String(categoryId));
-      
-      const available = typeof data.available === 'string' ? parseInt(data.available, 10) : data.available;
-      formData.append("quantity", String(available));
       
       // Append any uploaded images
       if (uploadedImages.length > 0) {
@@ -123,8 +113,8 @@ export default function AddProduct() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-8">
-          <h1 className="text-2xl font-display mb-1">Add New Product</h1>
-          <p className="text-gray-500">Create a new product listing</p>
+          <h1 className="text-2xl font-display mb-1">Add New Item to Gallery</h1>
+          <p className="text-gray-500">Add a new image to your gallery</p>
         </div>
 
         <div className="max-w-2xl">
@@ -135,9 +125,9 @@ export default function AddProduct() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Name</FormLabel>
+                    <FormLabel>Image Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter product name" {...field} />
+                      <Input placeholder="Enter a name for this image" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -152,7 +142,7 @@ export default function AddProduct() {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter product description"
+                        placeholder="Enter a brief description for this image"
                         className="min-h-[100px]"
                         {...field}
                       />
@@ -161,51 +151,6 @@ export default function AddProduct() {
                   </FormItem>
                 )}
               />
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price (RON)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number"
-                          step="0.01" 
-                          placeholder="0.00"
-                          onChange={(e) => {
-                            field.onChange(parseFloat(e.target.value));
-                          }}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="available"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Available Quantity</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="0"
-                          onChange={(e) => {
-                            field.onChange(parseInt(e.target.value, 10));
-                          }}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
@@ -289,7 +234,7 @@ export default function AddProduct() {
                 className="w-full"
                 disabled={mutation.isPending}
               >
-                {mutation.isPending ? "Adding Product..." : "Add Product"}
+                {mutation.isPending ? "Adding to Gallery..." : "Add to Gallery"}
               </Button>
             </form>
           </Form>

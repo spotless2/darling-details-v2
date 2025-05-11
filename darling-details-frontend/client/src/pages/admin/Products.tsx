@@ -4,14 +4,15 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Pencil, Trash2 } from "lucide-react";
 import { Link } from "wouter";
-import { productService } from "@/services";
+import { productService, categoryService } from "@/services";
 import { useToast } from "@/hooks/use-toast";
-import type { Product } from "@shared/schema";
+import type { Product, Category } from "@shared/schema";
 
 export default function Products() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
+  // Fetch products
   const { data: productsResponse, isLoading } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
@@ -19,7 +20,16 @@ export default function Products() {
     },
   });
   
+  // Fetch categories
+  const { data: categoriesResponse } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      return await categoryService.getCategories();
+    },
+  });
+  
   const products = productsResponse?.data || [];
+  const categories = categoriesResponse?.data || [];
 
   const deleteProductMutation = useMutation({
     mutationFn: (id: string | number) => productService.deleteProduct(id),
@@ -43,6 +53,12 @@ export default function Products() {
     if (window.confirm("Are you sure you want to delete this product?")) {
       deleteProductMutation.mutate(id);
     }
+  };
+
+  // Improved function to get category name by ID
+  const getCategoryName = (categoryId: string | number) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : "Uncategorized";
   };
 
   return (
@@ -72,8 +88,8 @@ export default function Products() {
                 <tr className="border-b bg-gray-50">
                   <th className="text-left py-4 px-6 font-medium text-gray-600">Image</th>
                   <th className="text-left py-4 px-6 font-medium text-gray-600">Name</th>
-                  <th className="text-left py-4 px-6 font-medium text-gray-600">Price</th>
-                  <th className="text-left py-4 px-6 font-medium text-gray-600">Available</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-600 hidden md:table-cell">Category</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-600 hidden md:table-cell">Description</th>
                   <th className="text-right py-4 px-6 font-medium text-gray-600">Actions</th>
                 </tr>
               </thead>
@@ -87,11 +103,11 @@ export default function Products() {
                       <td className="py-4 px-6">
                         <div className="h-4 bg-gray-200 rounded w-32" />
                       </td>
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 hidden md:table-cell">
                         <div className="h-4 bg-gray-200 rounded w-20" />
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="h-4 bg-gray-200 rounded w-16" />
+                      <td className="py-4 px-6 hidden md:table-cell">
+                        <div className="h-4 bg-gray-200 rounded w-32" />
                       </td>
                       <td className="py-4 px-6">
                         <div className="h-8 bg-gray-200 rounded w-24 ml-auto" />
@@ -109,8 +125,10 @@ export default function Products() {
                         />
                       </td>
                       <td className="py-4 px-6">{product.name}</td>
-                      <td className="py-4 px-6">{product.price} RON</td>
-                      <td className="py-4 px-6">{product.quantity || product.available || 0}</td>
+                      <td className="py-4 px-6 hidden md:table-cell">{getCategoryName(product.categoryId)}</td>
+                      <td className="py-4 px-6 hidden md:table-cell truncate max-w-[300px]">
+                        {product.description || "—"}
+                      </td>
                       <td className="py-4 px-6 text-right">
                         <div className="flex justify-end gap-2">
                           <Link href={`/admin/panel/products/edit/${product.id}`}>

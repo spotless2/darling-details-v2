@@ -42,9 +42,8 @@ export default function EditProduct() {
     defaultValues: {
       name: "",
       description: "",
-      price: 0,
-      categoryId: 0,
-      available: 0,
+      categoryId: "",
+      images: [],
     },
   });
 
@@ -68,9 +67,8 @@ export default function EditProduct() {
         form.reset({
           name: product.name || "",
           description: product.description || "",
-          price: parseFloat(product.price) || 0,
-          categoryId: parseInt(String(product.categoryId), 10) || 0,
-          available: parseInt(String(product.quantity || product.available || 0), 10) || 0,
+          categoryId: product.categoryId ? String(product.categoryId) : "",
+          images: [],
         });
         
         // Set current image
@@ -96,30 +94,21 @@ export default function EditProduct() {
       // Create FormData for image upload
       const formData = new FormData();
       
-      // Only add fields that have values to avoid overwriting with empty values
-      if (data.name) formData.append("name", data.name);
-      if (data.description !== undefined) formData.append("description", data.description);
+      formData.append("name", data.name);
       
-      if (data.price !== undefined) {
-        const price = typeof data.price === 'string' ? parseFloat(data.price) : data.price;
-        formData.append("price", String(price));
+      if (data.description) {
+        formData.append("description", data.description);
       }
       
-      if (data.categoryId !== undefined) {
-        const categoryId = typeof data.categoryId === 'string' ? 
-          parseInt(data.categoryId, 10) : data.categoryId;
-        formData.append("categoryId", String(categoryId));
-      }
+      const categoryId = typeof data.categoryId === 'string' ? 
+        parseInt(data.categoryId, 10) : data.categoryId;
+      formData.append("categoryId", String(categoryId));
       
-      if (data.available !== undefined) {
-        const available = typeof data.available === 'string' ? 
-          parseInt(data.available, 10) : data.available;
-        formData.append("quantity", String(available));
-      }
-      
-      // Append image if there's a new one
+      // Append images if there are new ones
       if (uploadedImages.length > 0) {
-        formData.append('image', uploadedImages[0]);
+        uploadedImages.forEach(image => {
+          formData.append('image', image); 
+        });
       }
       
       console.log("Updating product with data:", Object.fromEntries(formData.entries()));
@@ -148,7 +137,7 @@ export default function EditProduct() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
-      setUploadedImages([newFiles[0]]);
+      setUploadedImages(newFiles);
     }
   };
 
@@ -189,9 +178,9 @@ export default function EditProduct() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Name</FormLabel>
+                    <FormLabel>Image Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter product name" {...field} />
+                      <Input placeholder="Enter a name for this image" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -206,7 +195,7 @@ export default function EditProduct() {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter product description"
+                        placeholder="Enter a brief description for this image"
                         className="min-h-[100px]"
                         {...field}
                       />
@@ -215,51 +204,6 @@ export default function EditProduct() {
                   </FormItem>
                 )}
               />
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price (RON)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number"
-                          step="0.01" 
-                          placeholder="0.00"
-                          onChange={(e) => {
-                            field.onChange(parseFloat(e.target.value));
-                          }}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="available"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Available Quantity</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="0"
-                          onChange={(e) => {
-                            field.onChange(parseInt(e.target.value, 10));
-                          }}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
@@ -322,22 +266,26 @@ export default function EditProduct() {
                         
                         {uploadedImages.length > 0 && (
                           <div className="flex flex-wrap gap-2 mt-2">
-                            <div className="relative">
-                              <img
-                                src={URL.createObjectURL(uploadedImages[0])}
-                                alt="Upload preview"
-                                className="h-32 w-32 object-cover rounded-lg"
-                              />
-                              <button
-                                type="button"
-                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                                onClick={() => {
-                                  setUploadedImages([]);
-                                }}
-                              >
-                                ×
-                              </button>
-                            </div>
+                            {uploadedImages.map((image, index) => (
+                              <div key={index} className="relative">
+                                <img
+                                  src={URL.createObjectURL(image)}
+                                  alt="Upload preview"
+                                  className="h-32 w-32 object-cover rounded-lg"
+                                />
+                                <button
+                                  type="button"
+                                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                                  onClick={() => {
+                                    setUploadedImages((prev) =>
+                                      prev.filter((_, i) => i !== index)
+                                    );
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
                           </div>
                         )}
                       </div>
@@ -347,23 +295,13 @@ export default function EditProduct() {
                 )}
               />
 
-              <div className="flex gap-4">
-                <Button 
-                  type="submit" 
-                  className="flex-1"
-                  disabled={mutation.isPending}
-                >
-                  {mutation.isPending ? "Updating..." : "Update Product"}
-                </Button>
-                
-                <Button 
-                  type="button"
-                  variant="outline"
-                  onClick={() => setLocation("/admin/panel/products")}
-                >
-                  Cancel
-                </Button>
-              </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Updating Gallery Item..." : "Update Gallery Item"}
+              </Button>
             </form>
           </Form>
         </div>

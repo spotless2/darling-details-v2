@@ -8,26 +8,73 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter"; // Add useLocation import
 import type { Category, Product } from "@shared/schema";
 import { useRef, useState, useEffect } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 
-// Add this utility function to safely format prices
-const formatPrice = (price: any): string => {
-  if (typeof price === "number") {
-    return price.toFixed(2);
+// Utility function to handle image URLs - matching the Products page implementation
+const getImageUrl = (imageUrl: string | undefined | null): string => {
+  if (!imageUrl) return 'https://placehold.co/600x600/png?text=No+Image';
+  
+  try {
+    // In development mode, fix URLs that contain the frontend origin
+    if (import.meta.env.DEV) {
+      // Check if the URL includes the frontend origin (localhost:5173)
+      if (imageUrl.includes('localhost:5173')) {
+        // Extract just the path portion (everything after the origin)
+        const path = new URL(imageUrl).pathname;
+        // Return the backend URL + the path
+        return `http://localhost:3000${path}`;
+      }
+      
+      // If it's a relative path, just prepend the backend URL
+      if (!imageUrl.startsWith('http')) {
+        return `http://localhost:3000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+      }
+    }
+    
+    // For production or URLs that don't need fixing
+    return imageUrl;
+  } catch (error) {
+    // If URL parsing fails, return the original URL as a fallback
+    console.error("Error parsing image URL:", error);
+    return imageUrl;
   }
-  if (typeof price === "string" && !isNaN(parseFloat(price))) {
-    return parseFloat(price).toFixed(2);
-  }
-  return "0.00"; // fallback for undefined/null/invalid values
+};
+
+// Custom link component that scrolls to top
+const ScrollToTopLink = ({ href, children, className = "" }) => {
+  const [, setLocation] = useLocation();
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    
+    // First scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Then navigate to the new location (after a small delay to allow smooth scroll)
+    setTimeout(() => {
+      setLocation(href);
+    }, 100);
+  };
+
+  return (
+    <a href={href} onClick={handleClick} className={className}>
+      {children}
+    </a>
+  );
 };
 
 export function FeaturedCategories() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
+  const [mobileProductIndex, setMobileProductIndex] = useState(0);
+  const [autoScroll, setAutoScroll] = useState(true); // New state for auto-scroll control
 
   // Scroll animation
   const { scrollYProgress } = useScroll({
@@ -81,21 +128,55 @@ export function FeaturedCategories() {
     };
   });
 
-  // Carousel navigation
+  // Auto-scroll through categories
+  useEffect(() => {
+    if (!autoScroll || productsByCategory.length <= 1) return;
+    
+    const timer = setTimeout(() => {
+      setActiveIndex((prev) => 
+        prev < productsByCategory.length - 1 ? prev + 1 : 0
+      );
+    }, 6000); // 4.5 seconds between category changes
+    
+    return () => clearTimeout(timer);
+  }, [activeIndex, autoScroll, productsByCategory.length]);
+  
+  // Pause auto-scroll when user interacts with carousel
+  const handleManualNavigation = (index: number) => {
+    setActiveIndex(index);
+    setAutoScroll(false);
+    
+    // Resume auto-scroll after 10 seconds of inactivity
+    setTimeout(() => setAutoScroll(true), 10000);
+  };
+  
+  // Modified navigation functions to pause auto-scroll
   const handlePrev = () => {
     setActiveIndex((prev) =>
       prev > 0 ? prev - 1 : productsByCategory.length - 1
     );
+    setMobileProductIndex(0);
+    setAutoScroll(false);
+    
+    // Resume auto-scroll after 10 seconds of inactivity
+    setTimeout(() => setAutoScroll(true), 10000);
   };
 
   const handleNext = () => {
     setActiveIndex((prev) =>
       prev < productsByCategory.length - 1 ? prev + 1 : 0
     );
+    setMobileProductIndex(0);
+    setAutoScroll(false);
+    
+    // Resume auto-scroll after 10 seconds of inactivity
+    setTimeout(() => setAutoScroll(true), 10000);
   };
 
-  // Add this to your component before the return statement
-  const [mobileProductIndex, setMobileProductIndex] = useState(0);
+  // Reset mobile product index whenever activeIndex changes
+  useEffect(() => {
+    setMobileProductIndex(0);
+  }, [activeIndex]);
 
   useEffect(() => {
     const currentGroup = productsByCategory[activeIndex];
@@ -144,16 +225,13 @@ export function FeaturedCategories() {
         transition={{ duration: 0.8 }}
         className="text-center mb-16"
       >
-        <h2 className="text-3xl font-display mb-4">Categorii de Produse</h2>
+        <h2 className="text-3xl font-display mb-4">Explorează Galeria Noastră</h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Descoperă gama noastră completă de produse și servicii pentru
-          evenimente memorabile
+          Descoperă colecția noastră de decorațiuni și aranjamente pentru evenimente speciale
         </p>
       </motion.div>
 
-      {/* Replace just the Featured category with products section */}
       <div className="relative mb-12">
-        {/* Repositioned Navigation buttons - now at top corners with better contrast */}
         <div className="absolute z-20 flex justify-between w-full top-3 px-3 md:px-6 pointer-events-none">
           <Button
             variant="secondary"
@@ -186,21 +264,18 @@ export function FeaturedCategories() {
                   transition={{ duration: 0.5 }}
                   className="relative overflow-hidden rounded-2xl"
                 >
-                  {/* Background image */}
                   <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
                       backgroundImage: `url(${
-                        group.category.image || "/placeholder-category.jpg"
+                        getImageUrl(group.category.image) || "/placeholder-category.jpg"
                       })`,
                       filter: "blur(1px)",
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-black/90 to-black/60" />
 
-                  {/* Content container - completely restructured for mobile */}
                   <div className="relative z-10 p-5 md:p-8 flex flex-col min-h-[550px] md:min-h-[480px]">
-                    {/* Category information - always at top */}
                     <div className="text-center mb-5 md:mb-7 pt-4">
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
@@ -231,7 +306,6 @@ export function FeaturedCategories() {
                       </motion.p>
                     </div>
 
-                    {/* Mobile: Single product at a time with auto-advance */}
                     <div className="md:hidden flex-grow flex flex-col justify-center">
                       {group.products.length > 0 ? (
                         <div className="relative">
@@ -245,78 +319,47 @@ export function FeaturedCategories() {
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -50 }}
                                     transition={{ duration: 0.4 }}
-                                    className="bg-white rounded-xl shadow-xl overflow-hidden mx-auto max-w-[240px]"
+                                    className="overflow-hidden mx-auto max-w-[300px]"
                                   >
-                                    <Link href={`/products/${product.id}`}>
-                                      <div className="relative h-36 bg-gray-200">
-                                        <img
-                                          src={
-                                            product.imageUrl ||
-                                            "/placeholder-product.jpg"
-                                          }
-                                          alt={product.name}
-                                          className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute top-2 right-2 bg-white/90 text-black px-2 py-0.5 rounded-full text-xs font-medium">
-                                          {formatPrice(product.price)} RON
+                                    <ScrollToTopLink href={`/products?category=${group.category.slug}`}>
+                                      <div className="relative rounded-xl overflow-hidden shadow-lg border border-white/20">
+                                        <div className="aspect-square relative">
+                                          <img
+                                            src={getImageUrl(product.imageUrl) || "/placeholder-product.jpg"}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover transition-transform duration-700 ease-in-out hover:scale-110" 
+                                            loading="lazy"
+                                            onError={(e) => {
+                                              e.currentTarget.src = "/placeholder-product.jpg";
+                                            }}
+                                          />
+                                          {/* Simplified overlay without zoom icon */}
+                                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+                                            <h4 className="text-white font-medium text-base drop-shadow-md">
+                                              {product.name}
+                                            </h4>
+                                          </div>
                                         </div>
                                       </div>
-                                      <div className="p-3">
-                                        <h4 className="font-medium text-sm truncate">
-                                          {product.name}
-                                        </h4>
-                                        <p className="text-gray-600 text-xs mt-1 line-clamp-1">
-                                          {product.description?.substring(
-                                            0,
-                                            60
-                                          ) || ""}
-                                        </p>
-                                        <div className="mt-2 flex items-center justify-between">
-                                          <span className="text-xs text-primary font-medium">
-                                            Vezi detalii
-                                          </span>
-                                          <ArrowRight className="h-3 w-3 text-primary" />
-                                        </div>
-                                      </div>
-                                    </Link>
+                                    </ScrollToTopLink>
                                   </motion.div>
                                 )
                             )}
                           </AnimatePresence>
-
-                          {/* Product pagination dots */}
-                          {group.products.length > 1 && (
-                            <div className="flex justify-center mt-3 gap-1.5">
-                              {group.products.map((_, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => setMobileProductIndex(idx)}
-                                  className={`w-1.5 h-1.5 rounded-full transition-all ${
-                                    idx === mobileProductIndex
-                                      ? "bg-primary scale-110"
-                                      : "bg-white/60"
-                                  }`}
-                                  aria-label={`Show product ${idx + 1}`}
-                                />
-                              ))}
-                            </div>
-                          )}
                         </div>
                       ) : (
                         <div className="flex items-center justify-center h-32 bg-white/10 backdrop-blur-sm rounded-xl">
                           <p className="text-white text-sm">
-                            Nu există produse în această categorie
+                            Nu există imagini în această categorie
                           </p>
                         </div>
                       )}
                     </div>
 
-                    {/* Desktop: Products Grid - Adaptive layout based on product count */}
                     <div className="hidden md:block flex-grow">
                       {group.products.length > 0 ? (
                         <div
                           className={`grid gap-6 max-w-4xl mx-auto ${
-                            // Dynamically set grid columns based on product count
                             group.products.length === 1
                               ? "grid-cols-1 max-w-md"
                               : group.products.length === 2
@@ -330,67 +373,69 @@ export function FeaturedCategories() {
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.2 + index * 0.1 }}
-                              whileHover={{
-                                y: -5,
-                                transition: { duration: 0.2 },
-                              }}
-                              className="bg-white rounded-xl shadow-xl overflow-hidden h-full"
+                              className="overflow-hidden"
                             >
-                              <Link href={`/products/${product.id}`}>
-                                <div className="relative h-48 bg-gray-200">
-                                  <img
-                                    src={
-                                      product.imageUrl ||
-                                      "/placeholder-product.jpg"
-                                    }
-                                    alt={product.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <div className="absolute top-3 right-3 bg-white/90 text-black px-2 py-1 rounded-full text-xs font-medium">
-                                    {formatPrice(product.price)} RON
+                              <ScrollToTopLink href={`/products?category=${group.category.slug}`}>
+                                {/* Redesigned desktop gallery item with beautiful hover effects */}
+                                <div className="group relative rounded-xl overflow-hidden shadow-xl border border-white/10 transform transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-2xl">
+                                  {/* Image container with elegant hover zoom */}
+                                  <div className="aspect-square overflow-hidden">
+                                    <img
+                                      src={getImageUrl(product.imageUrl) || "/placeholder-product.jpg"}
+                                      alt={product.name}
+                                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                                      loading="lazy"
+                                      onError={(e) => {
+                                        e.currentTarget.src = "/placeholder-product.jpg";
+                                      }}
+                                    />
+                                  </div>
+                                  
+                                  {/* Beautiful gradient overlay with reveal animation */}
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                      {/* Image name */}
+                                      <h4 className="text-white font-medium text-lg tracking-wide drop-shadow-md mb-2">
+                                        {product.name}
+                                      </h4>
+                                      
+                                      {/* Elegant action indicator */}
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-white/90 text-xs">
+                                          {categories.find(c => c.id === product.categoryId)?.name}
+                                        </span>
+                                        <span className="bg-white text-primary p-2 rounded-full shadow-lg transform transition-all duration-300 scale-0 group-hover:scale-100">
+                                          <ZoomIn size={18} />
+                                        </span>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="p-4">
-                                  <h4 className="font-medium text-base truncate">
-                                    {product.name}
-                                  </h4>
-                                  <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-                                    {product.description?.substring(0, 80) ||
-                                      ""}
-                                  </p>
-                                  <div className="mt-3 flex items-center justify-between">
-                                    <span className="text-sm text-primary font-medium">
-                                      Vezi detalii
-                                    </span>
-                                    <ArrowRight className="h-4 w-4 text-primary" />
-                                  </div>
-                                </div>
-                              </Link>
+                              </ScrollToTopLink>
                             </motion.div>
                           ))}
                         </div>
                       ) : (
                         <div className="flex items-center justify-center h-48 bg-white/10 backdrop-blur-sm rounded-xl max-w-4xl mx-auto">
                           <p className="text-white">
-                            Nu există produse în această categorie
+                            Nu există imagini în această categorie
                           </p>
                         </div>
                       )}
                     </div>
 
-                    {/* View all button - always at bottom */}
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 }}
                       className="mt-5 md:mt-7 text-center"
                     >
-                      <Link href={`/products?category=${group.category.slug}`}>
-                        <Button className="group bg-white/90 hover:bg-white text-black hover:text-black border-0 w-auto">
-                          Vezi toate produsele
-                          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ScrollToTopLink href={`/products?category=${group.category.slug}`}>
+                        <Button className="group bg-white/90 hover:bg-white text-black hover:text-black border-0 w-auto text-base px-6 py-5"> {/* Increased button size */}
+                          Vezi întreaga galerie
+                          <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" /> {/* Increased icon size */}
                         </Button>
-                      </Link>
+                      </ScrollToTopLink>
                     </motion.div>
                   </div>
                 </motion.div>
@@ -398,12 +443,11 @@ export function FeaturedCategories() {
           )}
         </AnimatePresence>
 
-        {/* Indicators - moved outside the main carousel */}
         <div className="flex justify-center mt-4 gap-2">
           {productsByCategory.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setActiveIndex(idx)}
+              onClick={() => handleManualNavigation(idx)} // Use new function for manual navigation
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 idx === activeIndex
                   ? "bg-primary scale-110"
@@ -415,10 +459,8 @@ export function FeaturedCategories() {
         </div>
       </div>
 
-      {/* Category browse grid */}
       <motion.div
         className={`grid gap-6 mt-16 ${
-          // Adjust grid columns based on number of categories
           categories.length === 1
             ? "grid-cols-1 max-w-md mx-auto"
             : categories.length === 2
@@ -454,43 +496,46 @@ export function FeaturedCategories() {
             onHoverStart={() => setHoveredCategory(index)}
             onHoverEnd={() => setHoveredCategory(null)}
           >
-            <Link href={`/products?category=${category.slug}`}>
-              <Card className="cursor-pointer overflow-hidden h-40 md:h-48">
-                <CardContent className="p-0 relative h-full">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-all duration-700"
-                    style={{
-                      backgroundImage: `url(${
-                        category.image || "/placeholder-category.jpg"
-                      })`,
+            <ScrollToTopLink href={`/products?category=${category.slug}`}>
+              {/* Redesigned category card with subtle glass effect */}
+              <div className="relative h-40 md:h-48 rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:shadow-xl hover:scale-[1.03]">
+                {/* Background image with subtle zoom effect */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out hover:scale-110"
+                  style={{
+                    backgroundImage: `url(${getImageUrl(category.image) || "/placeholder-category.jpg"})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                  }}
+                />
+                
+                {/* Elegant glass-like overlay */}
+                <div className={`absolute inset-0 transition-all duration-300 backdrop-blur-[1px] ${
+                  hoveredCategory === index 
+                    ? "bg-gradient-to-t from-black/80 via-black/50 to-black/30" 
+                    : "bg-gradient-to-t from-black/70 via-black/40 to-black/20"
+                }`} />
+
+                {/* Content with subtle reveal animation */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-3">
+                  <h3 className="text-lg font-medium text-white text-center drop-shadow-md transition-all duration-300 transform translate-y-0">
+                    {category.name}
+                  </h3>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{
+                      opacity: hoveredCategory === index ? 1 : 0,
+                      y: hoveredCategory === index ? 0 : 10,
                     }}
-                  />
-                  <div
-                    className={`absolute inset-0 transition-opacity duration-300 ${
-                      hoveredCategory === index ? "bg-black/60" : "bg-black/40"
-                    }`}
-                  />
-
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-3">
-                    <h3 className="text-lg font-medium text-white text-center">
-                      {category.name}
-                    </h3>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{
-                        opacity: hoveredCategory === index ? 1 : 0,
-                        y: hoveredCategory === index ? 0 : 10,
-                      }}
-                      transition={{ duration: 0.2 }}
-                      className="text-xs text-white mt-1"
-                    >
-                      Vezi produse →
-                    </motion.div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+                    transition={{ duration: 0.3 }}
+                    className="mt-2 bg-white/20 backdrop-blur-sm text-white text-xs py-1 px-3 rounded-full"
+                  >
+                    Vezi galeria →
+                  </motion.div>
+                </div>
+              </div>
+            </ScrollToTopLink>
           </motion.div>
         ))}
       </motion.div>

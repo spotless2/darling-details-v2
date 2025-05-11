@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { ProductCard } from "@/components/products/ProductCard";
+import { motion, AnimatePresence } from "framer-motion";
 import { categoryService, productService } from "@/services";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import { Search } from "lucide-react"; // Add this import
-import { Input } from "@/components/ui/input";
+import { ZoomIn, X as XIcon, ChevronDown } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Animation variants
 const containerVariants = {
@@ -22,9 +29,41 @@ const itemVariants = {
   show: { opacity: 1, y: 0 }
 };
 
-export default function Products() {
-  const [searchQuery, setSearchQuery] = useState("");
+// Utility function to handle image URLs
+const getImageUrl = (imageUrl: string | undefined | null): string => {
+  if (!imageUrl) return 'https://placehold.co/600x600/png?text=No+Image';
+  
+  try {
+    // In development mode, fix URLs that contain the frontend origin
+    if (import.meta.env.DEV) {
+      // Check if the URL includes the frontend origin (localhost:5173)
+      if (imageUrl.includes('localhost:5173')) {
+        // Extract just the path portion (everything after the origin)
+        const path = new URL(imageUrl).pathname;
+        // Return the backend URL + the path
+        return `http://localhost:3000${path}`;
+      }
+      
+      // If it's a relative path, just prepend the backend URL
+      if (!imageUrl.startsWith('http')) {
+        return `http://localhost:3000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+      }
+    }
+    
+    // For production or URLs that don't need fixing
+    return imageUrl;
+  } catch (error) {
+    // If URL parsing fails, return the original URL as a fallback
+    console.error("Error parsing image URL:", error);
+    return imageUrl;
+  }
+};
 
+export default function Products() {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+  
   // Fetch all categories
   const { data: categoriesResponse } = useQuery({
     queryKey: ["categories"],
@@ -40,151 +79,334 @@ export default function Products() {
   const categories = categoriesResponse?.data || [];
   const allProducts = productsResponse?.data || [];
   
+  // Filter products by category only (removed search filtering)
   const filteredProducts = allProducts.filter(product => {
-    // Normalize search query - trim whitespace and convert to lowercase
-    const query = searchQuery.trim().toLowerCase();
-    
-    // If no search query, return all products
-    if (!query) return true;
-    
-    // Check product name (with null/undefined check)
-    const nameMatch = product.name?.toLowerCase().includes(query) || false;
-    
-    // Check product description (with null/undefined check)
-    const descriptionMatch = product.description?.toLowerCase().includes(query) || false;
-    
-    // Return true if either name or description matches
-    return nameMatch || descriptionMatch;
+    // Apply only category filter
+    return !activeCategory || product.categoryId === activeCategory;
   });
   
   // Group products by category
   const productsByCategory = categories.map(category => ({
     category,
-    products: filteredProducts.filter(product => product.categoryId === category.id)
+    products: filteredProducts.filter(product => 
+      activeCategory ? (product.categoryId === category.id && product.categoryId === activeCategory) 
+                     : product.categoryId === category.id
+    )
   }));
 
-// Replace the entire return statement
+  // Scroll to category section when activeCategory changes
+  useEffect(() => {
+    if (activeCategory && categoryRefs.current[activeCategory]) {
+      categoryRefs.current[activeCategory]?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }, [activeCategory]);
 
-return (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-  >
-    {/* Use the same PageHeader component as About page */}
-    <PageHeader
-      title="Colecția Noastră"
-      description="Explorează toate produsele noastre pentru evenimente speciale, organizate pe categorii"
-    />
+  // Clear category filter
+  const clearFilters = () => {
+    setActiveCategory(null);
+  };
 
-{/* Search section with improved contrast */}
-<div className="bg-gradient-to-b from-primary/5 to-white py-12">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <motion.div 
-      className="max-w-2xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.8 }}
+  // Function to handle product click and show modal
+  const handleProductClick = (product: any) => {
+    setSelectedProduct(product);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="pb-20"
     >
-      <div className="bg-white p-6 rounded-lg shadow-md border border-primary/30">
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="Caută produse după nume sau descriere..."
-            className="pl-10 py-6 border-primary/30 focus:border-primary focus:ring-primary/40 bg-primary/10 placeholder:text-primary/70 text-gray-800 font-medium"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search className="absolute left-3 top-3.5 h-5 w-5 text-primary" />
-        </div>
-        
-        {searchQuery && (
-          <div className="mt-3 text-sm text-primary font-medium">
-            {filteredProducts.length === 0 ? (
-              <p>Nu am găsit rezultate pentru "<span className="text-primary font-bold">{searchQuery}</span>"</p>
-            ) : (
-              <p>Am găsit <span className="text-primary font-bold">{filteredProducts.length}</span> produse pentru "<span className="text-primary font-bold">{searchQuery}</span>"</p>
-            )}
+      {/* Gallery Header */}
+      <PageHeader
+        title="Galeria Noastră"
+        description="Explorează colecția noastră de produse și decorațiuni pentru evenimente speciale"
+      />
+
+      {/* Improved Mobile-friendly Category Navigation */}
+      <div className="bg-primary/5 sticky top-16 z-10 border-y border-primary/10 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          {/* Mobile Dropdown (visible on small screens) */}
+          <div className="sm:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                  <span>
+                    {activeCategory 
+                      ? categories.find(c => c.id === activeCategory)?.name 
+                      : 'Toate categoriile'}
+                  </span>
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full min-w-[200px]">
+                <DropdownMenuItem 
+                  onClick={() => setActiveCategory(null)}
+                  className={!activeCategory ? "bg-primary/10 text-primary" : ""}
+                >
+                  Toate categoriile
+                </DropdownMenuItem>
+                {categories.map(category => (
+                  <DropdownMenuItem
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={activeCategory === category.id ? "bg-primary/10 text-primary" : ""}
+                  >
+                    {category.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+          
+          {/* Desktop Buttons (hidden on mobile) */}
+          <div className="hidden sm:flex flex-wrap gap-2">
+            <Button 
+              variant={!activeCategory ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveCategory(null)}
+              className="whitespace-nowrap"
+            >
+              Toate
+            </Button>
+            
+            {categories.map(category => (
+              <Button
+                key={category.id}
+                variant={activeCategory === category.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveCategory(category.id)}
+                className="whitespace-nowrap"
+              >
+                {category.name}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Active filter indicator (visible on all screen sizes) */}
+          {activeCategory && (
+            <div className="mt-2 flex items-center justify-between">
+              <Badge variant="outline" className="bg-primary/5 text-primary">
+                {categories.find(c => c.id === activeCategory)?.name}
+                <button 
+                  className="ml-1" 
+                  onClick={() => setActiveCategory(null)} 
+                  aria-label="Remove category filter"
+                >
+                  <XIcon size={12} />
+                </button>
+              </Badge>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="text-xs text-primary hover:text-primary/80"
+              >
+                Resetează
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Gallery Content */}
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6 sm:py-10">
+        {/* Loading state */}
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="aspect-square bg-gray-100 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory || 'all'}
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              exit="hidden"
+              className="space-y-10 sm:space-y-16"
+            >
+              {/* Display products by category */}
+              {productsByCategory
+                .filter(group => group.products.length > 0) // Only show categories with products
+                .map(({ category, products }) => (
+                  <motion.section 
+                    key={category.id} 
+                    variants={itemVariants}
+                    className="scroll-mt-32"
+                    id={`category-${category.slug}`}
+                    ref={el => categoryRefs.current[category.id] = el}
+                  >
+                    <div className="flex items-center mb-4 sm:mb-8">
+                      <h2 className="text-xl sm:text-3xl font-display text-gray-900 flex flex-wrap items-center gap-2">
+                        {category.name}
+                        <Badge variant="outline" className="bg-primary/5 text-primary text-xs sm:text-sm">
+                          {products.length} imagini
+                        </Badge>
+                      </h2>
+                      <Separator className="flex-grow ml-4 sm:ml-6 hidden sm:block" />
+                    </div>
+                    
+                    {category.description && (
+                      <p className="text-gray-600 mb-4 sm:mb-8 max-w-3xl text-sm sm:text-base">
+                        {category.description}
+                      </p>
+                    )}
+                    
+                    {/* Optimized Gallery Grid - Better for mobile viewing and scrolling */}
+                    {products.length === 1 ? (
+                      // Special case for single image in a category - different for mobile vs desktop
+                      <div className="block sm:hidden max-w-lg mx-auto">
+                        <motion.div
+                          whileHover={{ 
+                            scale: 1.02,
+                            transition: { duration: 0.2 } 
+                          }}
+                          className="group relative aspect-square cursor-pointer"
+                          onClick={() => handleProductClick(products[0])}
+                        >
+                          {/* Mobile single image view */}
+                          <div className="relative w-full h-full overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+                            <img 
+                              src={getImageUrl(products[0].imageUrl)} 
+                              alt={products[0].name || 'Product Image'} 
+                              className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                            />
+                            
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4">
+                              <h3 className="text-white font-medium text-base sm:text-lg line-clamp-1">{products[0].name}</h3>
+                              
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-white/90 text-xs sm:text-sm">
+                                  {products[0].category?.name || categories.find(c => c.id === products[0].categoryId)?.name}
+                                </span>
+                                <span className="bg-primary/80 text-white text-xs p-1 rounded-full">
+                                  <ZoomIn size={14} />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </div>
+                    ) : null}
+                    
+                    {/* Desktop view for all cases (including single products) */}
+                    <div className={`${products.length === 1 ? 'hidden sm:grid' : 'grid'} grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6`}>
+                      {products.map(product => (
+                        <motion.div
+                          key={product.id}
+                          whileHover={{ 
+                            scale: 1.02,
+                            transition: { duration: 0.2 } 
+                          }}
+                          className="group relative aspect-square cursor-pointer"
+                          onClick={() => handleProductClick(product)}
+                        >
+                          {/* Image Container */}
+                          <div className="relative w-full h-full overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+                            {/* Product Image with URL handling */}
+                            <img 
+                              src={getImageUrl(product.imageUrl)} 
+                              alt={product.name || 'Product Image'} 
+                              className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                            />
+                            
+                            {/* Overlay with minimal info */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 sm:p-4">
+                              <h3 className="text-white font-medium text-sm sm:text-base line-clamp-1">{product.name}</h3>
+                              
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-white/90 text-xs hidden sm:inline-block">
+                                  {product.category?.name || categories.find(c => c.id === product.categoryId)?.name}
+                                </span>
+                                <span className="bg-primary/80 text-white text-xs p-1 rounded-full ml-auto">
+                                  <ZoomIn size={14} />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.section>
+                ))}
+                
+              {/* No results message */}
+              {filteredProducts.length === 0 && (
+                <motion.div 
+                  variants={itemVariants}
+                  className="text-center py-12 sm:py-20"
+                >
+                  <div className="max-w-md mx-auto px-4">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      Nu am găsit imagini
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Încercați să selectați o altă categorie.
+                    </p>
+                    <Button 
+                      onClick={clearFilters}
+                      variant="default"
+                    >
+                      Afișează toată galeria
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         )}
       </div>
-    </motion.div>
-  </div>
-</div>
 
-    {/* Product listings section */}
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      {/* Loading state */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-80 bg-gray-100 rounded-lg animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="space-y-16"
-        >
-          {/* Display products by category */}
-          {productsByCategory
-            .filter(group => group.products.length > 0) // Only show categories with products
-            .map(({ category, products }) => (
-              <motion.section 
-                key={category.id} 
-                variants={itemVariants}
-                className="scroll-mt-16"
-                id={`category-${category.slug}`}
-              >
-                <div className="flex items-center mb-6">
-                  <h2 className="text-3xl font-display text-gray-900">
-                    {category.name}
-                  </h2>
-                  <Separator className="flex-grow ml-6" />
+      {/* Improved Image Gallery Modal */}
+      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden bg-white/95 backdrop-blur-sm max-h-[90vh] max-w-[95vw]">
+          <div className="relative w-full h-full max-h-[80vh] overflow-y-auto">
+            {selectedProduct && (
+              <div className="flex flex-col md:flex-row">
+                {/* Image - optimized for mobile and desktop */}
+                <div className="w-full md:w-2/3 h-[50vh] md:h-[70vh] relative bg-black/5 flex items-center justify-center">
+                  <img 
+                    src={getImageUrl(selectedProduct.imageUrl)} 
+                    alt={selectedProduct.name || 'Product Image'} 
+                    className="max-w-full max-h-full object-contain p-2"
+                  />
                 </div>
                 
-                {category.description && (
-                  <p className="text-gray-600 mb-8 max-w-3xl">
-                    {category.description}
-                  </p>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {products.map(product => (
-                    <motion.div
-                      key={product.id}
-                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                      className="transform transition-all duration-300"
-                    >
-                      <ProductCard product={product} />
-                    </motion.div>
-                  ))}
+                {/* Product Details */}
+                <div className="w-full md:w-1/3 p-4 sm:p-6 space-y-3 md:space-y-4 border-t md:border-t-0 md:border-l border-gray-200">
+                  <h2 className="text-xl sm:text-2xl font-display text-gray-900">{selectedProduct.name}</h2>
+                  
+                  <Badge variant="outline" className="bg-primary/5 text-primary">
+                    {categories.find(c => c.id === selectedProduct.categoryId)?.name}
+                  </Badge>
+                  
+                  {selectedProduct.description && (
+                    <div className="mt-3 sm:mt-4">
+                      <h3 className="text-sm font-medium text-gray-900">Descriere:</h3>
+                      <p className="mt-1 sm:mt-2 text-sm text-gray-600">{selectedProduct.description}</p>
+                    </div>
+                  )}
+                  
+                  {selectedProduct.details && (
+                    <div className="mt-3 sm:mt-4">
+                      <h3 className="text-sm font-medium text-gray-900">Detalii:</h3>
+                      <p className="mt-1 sm:mt-2 text-sm text-gray-600">{selectedProduct.details}</p>
+                    </div>
+                  )}
                 </div>
-              </motion.section>
-            ))}
-            
-          {/* No results message */}
-          {searchQuery && !filteredProducts.length && (
-            <motion.div 
-              variants={itemVariants}
-              className="text-center py-16"
-            >
-              <p className="text-xl text-gray-600">
-                Nu am găsit produse care să corespundă căutării "{searchQuery}"
-              </p>
-              <button 
-                className="mt-4 text-primary hover:text-primary/80"
-                onClick={() => setSearchQuery("")}
-              >
-                Șterge căutarea
-              </button>
-            </motion.div>
-          )}
-        </motion.div>
-      )}
-    </div>
-  </motion.div>
-);
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+  );
 }
