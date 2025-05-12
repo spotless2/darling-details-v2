@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { categoryService, productService } from "@/services";
 import { useState, useRef, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import { ZoomIn, X as XIcon, ChevronDown } from "lucide-react";
+import { ZoomIn, X as XIcon, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,6 +63,8 @@ export default function Products() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20); // Higher limit for gallery view
   
   // Fetch all categories
   const { data: categoriesResponse } = useQuery({
@@ -70,22 +72,25 @@ export default function Products() {
     queryFn: async () => await categoryService.getCategories()
   });
   
-  // Fetch all products at once
+  // Fetch products with pagination
   const { data: productsResponse, isLoading } = useQuery({
-    queryKey: ["all-products"],
-    queryFn: async () => await productService.getProducts()
+    queryKey: ["all-products", page, limit, activeCategory],
+    queryFn: async () => {
+      const params: any = { page, limit };
+      // Add category filter to API request if selected
+      if (activeCategory) params.categoryId = activeCategory;
+      return await productService.getProducts(params);
+    }
   });
 
   const categories = categoriesResponse?.data || [];
-  const allProducts = productsResponse?.data || [];
+  const products = productsResponse?.data || [];
+  const pagination = productsResponse?.pagination;
   
-  // Filter products by category only (removed search filtering)
-  const filteredProducts = allProducts.filter(product => {
-    // Apply only category filter
-    return !activeCategory || product.categoryId === activeCategory;
-  });
+  // No longer need to filter products by category as we're doing it in the API
+  const filteredProducts = products;
   
-  // Group products by category
+  // Group products by category - only when we have products
   const productsByCategory = categories.map(category => ({
     category,
     products: filteredProducts.filter(product => 
@@ -93,6 +98,11 @@ export default function Products() {
                      : product.categoryId === category.id
     )
   }));
+
+  // Reset to first page when category changes
+  useEffect(() => {
+    setPage(1);
+  }, [activeCategory]);
 
   // Scroll to category section when activeCategory changes
   useEffect(() => {
@@ -107,6 +117,19 @@ export default function Products() {
   // Clear category filter
   const clearFilters = () => {
     setActiveCategory(null);
+  };
+
+  // Pagination functions
+  const handlePreviousPage = () => {
+    setPage(prev => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNextPage = () => {
+    if (pagination && page < pagination.totalPages) {
+      setPage(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Function to handle product click and show modal
@@ -226,7 +249,7 @@ export default function Products() {
         ) : (
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeCategory || 'all'}
+              key={`${activeCategory || 'all'}-${page}`}
               variants={containerVariants}
               initial="hidden"
               animate="show"
@@ -359,6 +382,38 @@ export default function Products() {
                     </Button>
                   </div>
                 </motion.div>
+              )}
+              
+              {/* Pagination controls */}
+              {pagination && pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-8 pt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handlePreviousPage}
+                    disabled={page === 1}
+                    className="flex items-center gap-1"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Pagina anterioară
+                  </Button>
+                  
+                  <span className="text-sm text-gray-600">
+                    Pagina {page} din {pagination.totalPages}
+                    {pagination.total > 0 && ` (${pagination.total} produse în total)`}
+                  </span>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleNextPage}
+                    disabled={page >= pagination.totalPages}
+                    className="flex items-center gap-1"
+                  >
+                    Pagina următoare
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               )}
             </motion.div>
           </AnimatePresence>

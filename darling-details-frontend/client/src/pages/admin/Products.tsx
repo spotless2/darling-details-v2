@@ -2,21 +2,24 @@ import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Pencil, Trash2 } from "lucide-react";
+import { PlusCircle, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import { productService, categoryService } from "@/services";
 import { useToast } from "@/hooks/use-toast";
 import type { Product, Category } from "@shared/schema";
+import { useState } from "react";
 
 export default function Products() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10); // Default limit, can be made adjustable
   
-  // Fetch products
+  // Fetch products with pagination
   const { data: productsResponse, isLoading } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", page, limit],
     queryFn: async () => {
-      return await productService.getProducts();
+      return await productService.getProducts({ page, limit });
     },
   });
   
@@ -59,6 +62,16 @@ export default function Products() {
   const getCategoryName = (categoryId: string | number) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.name : "Uncategorized";
+  };
+
+  const handlePreviousPage = () => {
+    setPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    if (page < (productsResponse?.pagination?.totalPages || 1)) {
+      setPage(prev => prev + 1);
+    }
   };
 
   return (
@@ -155,6 +168,40 @@ export default function Products() {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination controls */}
+          {!isLoading && productsResponse?.pagination && (
+            <div className="flex justify-between items-center p-4 border-t">
+              <div className="text-sm text-gray-500">
+                Showing {products.length} of {productsResponse.pagination.total} products
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handlePreviousPage}
+                  disabled={page === 1}
+                  className="flex items-center gap-1"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <span className="text-sm">
+                  Page {page} of {productsResponse.pagination.totalPages}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleNextPage}
+                  disabled={page >= productsResponse.pagination.totalPages}
+                  className="flex items-center gap-1"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
     </AdminLayout>
