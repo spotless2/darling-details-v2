@@ -34,8 +34,6 @@ services:
       DB_NAME: '${DB_NAME:-darling_details}'
       DB_DIALECT: postgres
       JWT_SECRET: '${JWT_SECRET:-dev_jwt_secret_changeme_min_32_chars_x}'
-    ports:
-      - '3000:3000'
     volumes:
       - './darling-details-backend/uploads:/app/uploads'
     networks:
@@ -61,8 +59,6 @@ services:
       dockerfile: Dockerfile
     container_name: darling_details_frontend
     restart: unless-stopped
-    ports:
-      - '80:80'
     networks:
       - darling_details_network
       - coolify
