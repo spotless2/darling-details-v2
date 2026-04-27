@@ -111,7 +111,8 @@ exports.updateStoreSettings = async (req, res) => {
       workingHours,
       aboutStory,
       aboutMission,
-      aboutVision
+      aboutVision,
+      mapEmbedUrl
     } = req.body;
     
     // Find settings
@@ -139,6 +140,7 @@ exports.updateStoreSettings = async (req, res) => {
     if (aboutStory !== undefined) settings.aboutStory = aboutStory;
     if (aboutMission !== undefined) settings.aboutMission = aboutMission;
     if (aboutVision !== undefined) settings.aboutVision = aboutVision;
+    if (mapEmbedUrl !== undefined) settings.mapEmbedUrl = mapEmbedUrl;
     
     await settings.save();
     
