@@ -35,7 +35,13 @@ exports.createStoreSettings = async (req, res) => {
       contactPhone, 
       facebookUrl, 
       instagramUrl,
-      tiktokUrl 
+      tiktokUrl,
+      seoTitle,
+      seoDescription,
+      workingHours,
+      aboutStory,
+      aboutMission,
+      aboutVision
     } = req.body;
     
     // Check if settings already exist
@@ -56,7 +62,13 @@ exports.createStoreSettings = async (req, res) => {
       contactPhone,
       facebookUrl,
       instagramUrl,
-      tiktokUrl
+      tiktokUrl,
+      seoTitle,
+      seoDescription,
+      workingHours,
+      aboutStory,
+      aboutMission,
+      aboutVision
     });
     
     res.status(201).json({
@@ -93,7 +105,13 @@ exports.updateStoreSettings = async (req, res) => {
       contactPhone, 
       facebookUrl, 
       instagramUrl,
-      tiktokUrl 
+      tiktokUrl,
+      seoTitle,
+      seoDescription,
+      workingHours,
+      aboutStory,
+      aboutMission,
+      aboutVision
     } = req.body;
     
     // Find settings
@@ -115,6 +133,12 @@ exports.updateStoreSettings = async (req, res) => {
     if (facebookUrl !== undefined) settings.facebookUrl = facebookUrl;
     if (instagramUrl !== undefined) settings.instagramUrl = instagramUrl;
     if (tiktokUrl !== undefined) settings.tiktokUrl = tiktokUrl;
+    if (seoTitle !== undefined) settings.seoTitle = seoTitle;
+    if (seoDescription !== undefined) settings.seoDescription = seoDescription;
+    if (workingHours !== undefined) settings.workingHours = workingHours;
+    if (aboutStory !== undefined) settings.aboutStory = aboutStory;
+    if (aboutMission !== undefined) settings.aboutMission = aboutMission;
+    if (aboutVision !== undefined) settings.aboutVision = aboutVision;
     
     await settings.save();
     

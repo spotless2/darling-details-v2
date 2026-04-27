@@ -1,205 +1,188 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
+import {
+  LayoutDashboard,
   Package,
   PlusCircle,
   Settings,
   LogOut,
   Menu,
   Tag,
-  MessageSquare 
+  MessageSquare,
+  X,
+  Image,
+  Users,
+  Heart,
 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { authService } from "@/services";
+import { motion, AnimatePresence } from "framer-motion";
 
-const NAV_ITEMS = [
+const NAV_GROUPS = [
   {
-    title: "Dashboard",
-    href: "/admin/panel",
-    icon: LayoutDashboard,
+    label: "General",
+    items: [
+      { title: "Dashboard", href: "/admin/panel", icon: LayoutDashboard },
+    ],
   },
   {
-    title: "Products",
-    href: "/admin/panel/products",
-    icon: Package,
+    label: "Conținut",
+    items: [
+      { title: "Produse", href: "/admin/panel/products", icon: Package },
+      { title: "Adaugă Produs", href: "/admin/panel/products/new", icon: PlusCircle },
+      { title: "Categorii", href: "/admin/panel/categories", icon: Tag },
+      { title: "Hero Slides", href: "/admin/panel/hero-slides", icon: Image },
+    ],
   },
   {
-    title: "Add Product",
-    href: "/admin/panel/products/new",
-    icon: PlusCircle,
+    label: "Social",
+    items: [
+      { title: "Testimoniale", href: "/admin/panel/testimonials", icon: MessageSquare },
+    ],
   },
   {
-    title: "Categories",
-    href: "/admin/panel/categories",
-    icon: Tag,
-  },
-  {
-    title: "Testimonials",
-    href: "/admin/panel/testimonials",
-    icon: MessageSquare,
-  },
-  {
-    title: "Settings",
-    href: "/admin/panel/settings",
-    icon: Settings,
+    label: "Sistem",
+    items: [
+      { title: "Setări Magazin", href: "/admin/panel/settings", icon: Settings },
+    ],
   },
 ];
 
+function NavItem({ item, isActive, onClick }: any) {
+  const Icon = item.icon;
+  return (
+    <Link href={item.href} onClick={onClick}>
+      <div
+        className={cn(
+          "flex items-center gap-3 px-3 py-2.5 text-sm font-sans transition-all duration-200 rounded-sm cursor-pointer group",
+          isActive
+            ? "bg-primary text-white"
+            : "text-white/60 hover:text-white hover:bg-white/8"
+        )}
+      >
+        <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-white/50 group-hover:text-white")} />
+        <span>{item.title}</span>
+        {isActive && <div className="ml-auto w-1 h-4 bg-white/40 rounded-full" />}
+      </div>
+    </Link>
+  );
+}
+
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Mobile menu button */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b shadow-sm px-4 py-3">
-        <div className="flex items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="mr-2 border-gray-200 hover:bg-gray-100"
-          >
-            <Menu className="h-5 w-5 text-gray-700" />
-          </Button>
-          <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
-              <span className="text-lg font-display text-primary">DD</span>
-            </div>
-            <span className="text-lg font-display text-gray-900">Admin Panel</span>
-          </div>
+  const handleLogout = () => {
+    authService.logout();
+    window.location.href = "/login";
+  };
+
+  const SidebarContent = ({ onClose }: { onClose?: () => void }) => (
+    <div className="flex flex-col h-full bg-charcoal">
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-5 py-6 border-b border-white/8">
+        <div className="w-8 h-8 rounded-sm bg-primary/20 border border-primary/30 flex items-center justify-center">
+          <Heart className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <span className="font-display text-white text-base tracking-wide">Darling Details</span>
+          <span className="block text-[9px] tracking-[0.2em] uppercase text-white/40 font-sans">Admin Panel</span>
         </div>
       </div>
 
-      <div className="flex h-screen bg-gray-50">
-        {/* Mobile sidebar */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsMobileMenuOpen(false)} />
-        )}
-        <div
-          className={cn(
-            "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out md:hidden",
-            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          )}
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label}>
+            <p className="text-[9px] tracking-[0.25em] uppercase text-white/25 font-sans px-3 mb-2">{group.label}</p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => (
+                <NavItem
+                  key={item.href}
+                  item={item}
+                  isActive={location === item.href}
+                  onClick={onClose}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      {/* Logout */}
+      <div className="px-3 pb-5 border-t border-white/8 pt-4">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 w-full text-sm font-sans text-white/50 hover:text-white hover:bg-white/8 transition-all duration-200 rounded-sm"
         >
-          <div className="flex flex-col h-full bg-white border-r">
-            <div className="flex flex-col flex-grow pt-20 overflow-y-auto">
-              <nav className="flex-1 px-2 space-y-1">
-                {NAV_ITEMS.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location === item.href;
-                  return (
-                    <Button
-                      key={item.href}
-                      variant="ghost"
-                      className={cn(
-                        "w-full justify-start text-sm font-medium",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-gray-700 hover:bg-gray-50 hover:text-primary"
-                      )}
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        window.location.href = item.href;
-                      }}
-                    >
-                      <Icon
-                        className={cn(
-                          "mr-3 h-5 w-5",
-                          isActive
-                            ? "text-primary"
-                            : "text-gray-400 group-hover:text-primary"
-                        )}
-                      />
-                      {item.title}
-                    </Button>
-                  );
-                })}
-              </nav>
-              <div className="flex-shrink-0 border-t border-gray-200 p-4">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    window.location.href = "/admin";
-                  }}
-                >
-                  <LogOut className="mr-3 h-5 w-5 text-gray-400" />
-                  Logout
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+          <LogOut className="h-4 w-4" />
+          Deconectare
+        </button>
+      </div>
+    </div>
+  );
 
-        {/* Desktop sidebar */}
-        <div className="hidden md:flex md:flex-shrink-0">
-          <div className="flex flex-col w-64">
-            <div className="flex flex-col flex-grow pt-5 overflow-y-auto bg-white border-r">
-              <div className="flex items-center flex-shrink-0 px-4 mb-8">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                  <span className="text-xl font-display text-primary">DD</span>
-                </div>
-                <span className="text-xl font-display">Admin Panel</span>
-              </div>
-              <div className="flex flex-col flex-1">
-                <nav className="flex-1 px-2 space-y-1">
-                  {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = location === item.href;
-                    return (
-                      <Link key={item.href} href={item.href}>
-                        <Button
-                          variant="ghost"
-                          className={cn(
-                            "w-full justify-start text-sm font-medium",
-                            isActive
-                              ? "bg-primary/10 text-primary"
-                              : "text-gray-700 hover:bg-gray-50 hover:text-primary"
-                          )}
-                        >
-                          <Icon
-                            className={cn(
-                              "mr-3 h-5 w-5",
-                              isActive
-                                ? "text-primary"
-                                : "text-gray-400 group-hover:text-primary"
-                            )}
-                          />
-                          {item.title}
-                        </Button>
-                      </Link>
-                    );
-                  })}
-                </nav>
-                <div className="flex-shrink-0 border-t border-gray-200 p-4">
-                  <Link href="/admin">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary"
-                    >
-                      <LogOut className="mr-3 h-5 w-5 text-gray-400" />
-                      Logout
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  return (
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex w-60 shrink-0 flex-col">
+        <SidebarContent />
+      </div>
 
-        {/* Main content */}
-        <div className="flex flex-col flex-1 overflow-hidden bg-gray-50">
-          <main className="flex-1 relative overflow-y-auto focus:outline-none">
-            <div className="py-6 pt-20 md:pt-6">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-                {children}
-              </div>
-            </div>
-          </main>
-        </div>
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileOpen(false)}
+            />
+            <motion.div
+              className="fixed inset-y-0 left-0 w-64 z-50 md:hidden"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            >
+              <SidebarContent onClose={() => setIsMobileOpen(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <header className="bg-white border-b border-gray-100 px-4 sm:px-6 py-4 flex items-center gap-4 shrink-0">
+          <button
+            onClick={() => setIsMobileOpen(true)}
+            className="md:hidden p-2 rounded-sm text-charcoal/60 hover:text-charcoal hover:bg-gray-100 transition-colors"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+
+          <div className="flex-1">
+            <h1 className="text-sm font-sans font-medium text-charcoal/50 uppercase tracking-widest">
+              {NAV_GROUPS.flatMap((g) => g.items).find((i) => i.href === location)?.title || "Admin"}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link href="/">
+              <span className="text-xs font-sans text-charcoal/40 hover:text-primary transition-colors cursor-pointer">
+                ← Înapoi la site
+              </span>
+            </Link>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

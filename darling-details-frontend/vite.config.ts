@@ -50,7 +50,11 @@ export default defineConfig(async ({ command, mode }) => {
       // Add proxy configuration for your actual backend
       proxy: {
         "/api": {
-          target: "http://localhost:3000", // Your actual backend URL
+          target: "http://localhost:3000",
+          changeOrigin: true,
+        },
+        "/uploads": {
+          target: "http://localhost:3000",
           changeOrigin: true,
         },
       },

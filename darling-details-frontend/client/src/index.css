@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gilda+Display&family=Montserrat:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,12 +6,46 @@
 
 @layer base {
   :root {
-    --font-display: 'Gilda Display', serif;
-    --font-sans: 'Montserrat', sans-serif;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Jost', system-ui, sans-serif;
+    --gold: hsl(38, 65%, 58%);
+    --gold-light: hsl(40, 70%, 85%);
+    --ivory: hsl(40, 30%, 97%);
+    --charcoal: hsl(220, 20%, 12%);
+
+    /* shadcn/ui CSS variables */
+    --background: 40 30% 97%;
+    --foreground: 220 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 12%;
+    --primary: 348 45% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 20% 94%;
+    --secondary-foreground: 220 20% 12%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 220 15% 45%;
+    --accent: 38 65% 94%;
+    --accent-foreground: 220 20% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 348 45% 42%;
+    --radius: 0.4rem;
+    --sidebar-background: 220 20% 12%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 348 45% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 348 45% 42%;
   }
 
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   html {
@@ -19,61 +53,185 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased;
+    background-color: hsl(40, 30%, 97%);
+    color: hsl(220, 20%, 12%);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  /* Gold divider */
+  .divider-gold {
+    @apply flex items-center gap-4;
+  }
+  .divider-gold::before,
+  .divider-gold::after {
+    content: '';
+    @apply flex-1 h-px;
+    background: linear-gradient(90deg, transparent, hsl(38, 65%, 58%), transparent);
+  }
+
+  /* Section label */
+  .section-label {
+    @apply text-xs tracking-[0.3em] uppercase font-sans font-medium;
+    color: hsl(38, 65%, 50%);
+  }
+
+  /* Card elegant */
+  .card-elegant {
+    @apply bg-white rounded-sm overflow-hidden;
+    box-shadow: 0 4px 24px -4px rgba(0,0,0,0.08), 0 1px 6px -1px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .card-elegant:hover {
+    box-shadow: 0 12px 40px -8px rgba(0,0,0,0.14), 0 4px 16px -4px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+  }
+
+  /* Button gold */
+  .btn-gold {
+    @apply inline-flex items-center justify-center px-8 py-3 text-sm tracking-widest uppercase font-sans font-medium transition-all duration-300;
+    background: hsl(38, 65%, 58%);
+    color: white;
+  }
+  .btn-gold:hover {
+    background: hsl(38, 65%, 48%);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px -4px rgba(196, 150, 80, 0.4);
+  }
+
+  /* Button outline gold */
+  .btn-outline-gold {
+    @apply inline-flex items-center justify-center px-8 py-3 text-sm tracking-widest uppercase font-sans font-medium border transition-all duration-300;
+    border-color: hsl(38, 65%, 58%);
+    color: hsl(38, 65%, 48%);
+  }
+  .btn-outline-gold:hover {
+    background: hsl(38, 65%, 58%);
+    color: white;
+    transform: translateY(-1px);
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: var(--font-display);
+    font-family: var(--font-display) !important;
+  }
+
+  .font-sans-custom {
+    font-family: var(--font-sans) !important;
+  }
+
+  .text-gold {
+    color: hsl(38, 65%, 52%);
+  }
+
+  .bg-gold {
+    background-color: hsl(38, 65%, 58%);
+  }
+
+  .bg-ivory {
+    background-color: hsl(40, 30%, 97%);
+  }
+
+  .border-gold {
+    border-color: hsl(38, 65%, 58%);
   }
 
   @keyframes ken-burns {
-    0% {
-      transform: scale(1.05);
-    }
-    100% {
-      transform: scale(1.15);
-    }
+    0% { transform: scale(1.05); }
+    100% { transform: scale(1.2); }
   }
-
   .animate-ken-burns {
-    animation: ken-burns 20s forwards ease-in-out;
+    animation: ken-burns 25s forwards ease-in-out;
   }
 
-  .transition-all {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
+  @keyframes float-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-float-up {
+    animation: float-up 0.8s ease forwards;
   }
 
-  .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-1;
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
   }
 
-  .hover-scale {
-    @apply transition-transform duration-300 hover:scale-105;
+  @keyframes reveal-left {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0% 0 0); }
   }
 
-  .text-shadow {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  .text-shadow-hero {
+    text-shadow: 0 2px 20px rgba(0,0,0,0.4);
   }
 
-  .glass-effect {
-    @apply backdrop-blur-sm bg-white/10;
+  .glass-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .glass-navbar {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .img-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+  }
+
+  .hover-zoom img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .hover-zoom:hover img {
+    transform: scale(1.07);
+  }
+
+  /* Scrollbar styles */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(40, 30%, 95%);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(348, 40%, 65%);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(348, 45%, 42%);
   }
 }
 
-/* Ensure light theme is always properly applied */
+/* Ensure light theme */
 html.light {
-  background-color: white !important;
   color-scheme: light;
 }
-
 html.light img {
   filter: none !important;
 }

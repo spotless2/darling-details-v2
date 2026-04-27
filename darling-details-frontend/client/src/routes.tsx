@@ -25,6 +25,7 @@ const EditProduct = lazy(() => import("@/pages/admin/EditProduct"));
 const AdminSettings = lazy(() => import("@/pages/admin/Settings"));
 const AdminCategories = lazy(() => import("@/pages/admin/Categories"));
 const AdminTestimonials = lazy(() => import("@/pages/admin/Testimonials"));
+const AdminHeroSlides = lazy(() => import("@/pages/admin/HeroSlides"));
 
 export function AppRoutes() {
   return (
@@ -58,6 +59,7 @@ export function AppRoutes() {
         <ProtectedRoute path="/admin/panel/products/edit/:id" component={EditProduct} />
         <ProtectedRoute path="/admin/panel/categories" component={AdminCategories} />
         <ProtectedRoute path="/admin/panel/testimonials" component={AdminTestimonials} />
+        <ProtectedRoute path="/admin/panel/hero-slides" component={AdminHeroSlides} />
         <ProtectedRoute path="/admin/panel/settings" component={AdminSettings} />
         
         {/* 404 Route */}

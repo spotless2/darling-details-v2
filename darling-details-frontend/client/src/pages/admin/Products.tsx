@@ -39,21 +39,20 @@ export default function Products() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({
-        title: "Success",
-        description: "Product has been deleted successfully.",
+        title: "Produs șters cu succes.",
       });
     },
     onError: () => {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to delete product. Please try again.",
+        title: "Eroare",
+        description: "Nu s-a putut șterge produsul. Încearcă din nou.",
       });
     },
   });
 
   const handleDeleteProduct = (id: string | number) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    if (window.confirm("Ești sigur că vrei să ștergi acest produs?")) {
       deleteProductMutation.mutate(id);
     }
   };
@@ -61,7 +60,7 @@ export default function Products() {
   // Improved function to get category name by ID
   const getCategoryName = (categoryId: string | number) => {
     const category = categories.find(cat => cat.id === categoryId);
-    return category ? category.name : "Uncategorized";
+    return category ? category.name : "Fără categorie";
   };
 
   const handlePreviousPage = () => {
@@ -83,13 +82,14 @@ export default function Products() {
       >
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-display mb-1">Products</h1>
-            <p className="text-gray-500">Manage your product inventory</p>
+            <p className="text-xs tracking-[0.25em] uppercase font-sans text-charcoal/40 mb-1">Administrare</p>
+          <h1 className="font-display text-charcoal text-3xl">Produse</h1>
+            <p className="text-gray-500 font-sans text-sm">Gestionează inventarul de produse</p>
           </div>
           <Link href="/admin/panel/products/new">
             <Button className="flex items-center gap-2">
               <PlusCircle className="w-4 h-4" />
-              Add Product
+              Adaugă Produs
             </Button>
           </Link>
         </div>
@@ -99,11 +99,11 @@ export default function Products() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-gray-50">
-                  <th className="text-left py-4 px-6 font-medium text-gray-600">Image</th>
-                  <th className="text-left py-4 px-6 font-medium text-gray-600">Name</th>
-                  <th className="text-left py-4 px-6 font-medium text-gray-600 hidden md:table-cell">Category</th>
-                  <th className="text-left py-4 px-6 font-medium text-gray-600 hidden md:table-cell">Description</th>
-                  <th className="text-right py-4 px-6 font-medium text-gray-600">Actions</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-600">Imagine</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-600">Nume</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-600 hidden md:table-cell">Categorie</th>
+                  <th className="text-left py-4 px-6 font-medium text-gray-600 hidden md:table-cell">Descriere</th>
+                  <th className="text-right py-4 px-6 font-medium text-gray-600">Acțiuni</th>
                 </tr>
               </thead>
               <tbody>
@@ -147,7 +147,7 @@ export default function Products() {
                           <Link href={`/admin/panel/products/edit/${product.id}`}>
                             <Button size="sm" variant="outline" className="flex items-center gap-1">
                               <Pencil className="w-4 h-4" />
-                              Edit
+                              Editează
                             </Button>
                           </Link>
                           <Button
@@ -158,7 +158,7 @@ export default function Products() {
                             disabled={deleteProductMutation.isPending}
                           >
                             <Trash2 className="w-4 h-4" />
-                            Delete
+                            Șterge
                           </Button>
                         </div>
                       </td>
@@ -173,7 +173,7 @@ export default function Products() {
           {!isLoading && productsResponse?.pagination && (
             <div className="flex justify-between items-center p-4 border-t">
               <div className="text-sm text-gray-500">
-                Showing {products.length} of {productsResponse.pagination.total} products
+                Afișare {products.length} din {productsResponse.pagination.total} produse
               </div>
               <div className="flex items-center gap-2">
                 <Button 
@@ -184,10 +184,10 @@ export default function Products() {
                   className="flex items-center gap-1"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  Previous
+                  Anterior
                 </Button>
                 <span className="text-sm">
-                  Page {page} of {productsResponse.pagination.totalPages}
+                  Pagina {page} din {productsResponse.pagination.totalPages}
                 </span>
                 <Button 
                   variant="outline" 
@@ -196,7 +196,7 @@ export default function Products() {
                   disabled={page >= productsResponse.pagination.totalPages}
                   className="flex items-center gap-1"
                 >
-                  Next
+                  Următor
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>

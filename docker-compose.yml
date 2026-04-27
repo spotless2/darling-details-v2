@@ -1,0 +1,84 @@
+version: '3.9'
+services:
+  db:
+    image: 'postgres:15-alpine'
+    container_name: darling_details_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-devpassword}'
+      POSTGRES_DB: '${DB_NAME:-darling_details}'
+      POSTGRES_USER: '${DB_USER:-postgres}'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    networks:
+      - darling_details_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  backend:
+    build:
+      context: ./darling-details-backend
+      dockerfile: Dockerfile
+    container_name: darling_details_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: '${DB_USER:-postgres}'
+      DB_PASSWORD: '${DB_PASSWORD:-devpassword}'
+      DB_NAME: '${DB_NAME:-darling_details}'
+      DB_DIALECT: postgres
+      JWT_SECRET: '${JWT_SECRET:-dev_jwt_secret_changeme_min_32_chars_x}'
+    ports:
+      - '3000:3000'
+    volumes:
+      - './darling-details-backend/uploads:/app/uploads'
+    networks:
+      - darling_details_network
+      - coolify
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - coolify.managed=true
+      - coolify.name=darling-details-backend
+      - coolify.port=3000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+  
+  frontend:
+    build:
+      context: ./darling-details-frontend
+      dockerfile: Dockerfile
+    container_name: darling_details_frontend
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    networks:
+      - darling_details_network
+      - coolify
+    depends_on:
+      - backend
+    labels:
+      - coolify.managed=true
+      - coolify.name=darling-details-frontend
+      - coolify.port=80
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  darling_details_network:
+    driver: bridge
+  coolify:
+    external: true

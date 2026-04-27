@@ -23,6 +23,7 @@ require('./models/user');
 require('./models/storeSettings');
 require('./models/category');
 require('./models/product');
+require('./models/heroSlide');
 
 // Import and create associations between models
 const createAssociations = require('./models/associations');
@@ -67,7 +68,8 @@ const initializeDatabase = async () => {
     console.log('Database connection has been established successfully.');
     
     // Sync all models with database
-    const syncOptions = process.env.NODE_ENV === 'development' ? { force: true } : {};
+    // alter: true updates table structure without dropping data
+    const syncOptions = { alter: true };
     console.log(`Syncing database with options:`, syncOptions);
     
     await db.sync(syncOptions);
