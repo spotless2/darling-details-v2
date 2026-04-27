@@ -2,6 +2,10 @@
 FROM node:20-alpine as build
 WORKDIR /app
 
+# Accept API URL for direct backend communication (bypassing Nginx proxy)
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Install dependencies
 COPY package*.json ./
 RUN npm ci

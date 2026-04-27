@@ -57,6 +57,8 @@ services:
     build:
       context: ./darling-details-frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: '${SERVICE_URL_BACKEND:-https://api-dd.spotty3.duckdns.org}'
     container_name: darling_details_frontend
     restart: unless-stopped
     networks:
