@@ -31,8 +31,8 @@ exports.login = async (req, res) => {
     // Sign token
     jwt.sign(
       payload, 
-      process.env.JWT_SECRET,
-      { expiresIn: parseInt(process.env.JWT_EXPIRATION) },
+      process.env.JWT_SECRET || 'dev_jwt_secret_changeme_min_32_chars_x',
+      { expiresIn: parseInt(process.env.JWT_EXPIRATION || '86400') },
       (err, token) => {
         if (err) throw err;
         console.log('Login successful for user:', user.id);
