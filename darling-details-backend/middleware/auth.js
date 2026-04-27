@@ -12,7 +12,7 @@ const auth = (req, res, next) => {
   
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_jwt_secret_changeme_min_32_chars_x');
     
     // Add user from payload to request
     req.user = decoded;
