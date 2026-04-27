@@ -18,7 +18,7 @@ services:
       timeout: 5s
       retries: 5
   
-  backend:
+  darling_backend:
     build:
       context: ./darling-details-backend
       dockerfile: Dockerfile
@@ -65,7 +65,7 @@ services:
       - darling_details_network
       - coolify
     depends_on:
-      - backend
+      - darling_backend
     labels:
       - coolify.managed=true
       - coolify.name=darling-details-frontend
