@@ -45,7 +45,7 @@ export function Footer() {
               </div>
               <div>
                 <span className="font-display text-xl text-white tracking-wide">{settings?.storeName || SITE_CONFIG.name}</span>
-                <span className="block text-[10px] tracking-[0.25em] uppercase text-gold mt-0.5">evenimente & decoraÈ›iuni</span>
+                <span className="block text-[10px] tracking-[0.25em] uppercase text-gold mt-0.5">evenimente & decorațiuni</span>
               </div>
             </div>
             <p className="text-sm text-white/55 leading-relaxed max-w-sm mb-6">
@@ -124,7 +124,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/35">
-            Â© {year} {settings?.storeName || SITE_CONFIG.name}. Toate drepturile rezervate.
+            {"\u00A9"} {year} {settings?.storeName || SITE_CONFIG.name}. Toate drepturile rezervate.
           </p>
           <div className="flex items-center gap-4">
             <ScrollToTopLink

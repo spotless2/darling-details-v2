@@ -227,7 +227,7 @@ export function FeaturedCategories() {
               </div>
               <ScrollToTopLink
                 href={group.category.id === "all" ? "/products" : `/products?category=${group.category.slug}`}
-                className="flex items-center gap-2 px-6 py-2.5 text-xs tracking-widest uppercase font-sans bg-primary text-white hover:bg-primary/90 transition-all duration-300 shrink-0 hover:-translate-y-0.5 shadow-sm rounded-sm"
+                className="btn-primary px-6 py-2.5 hover:-translate-y-0.5 shadow-sm shrink-0"
               >
                 Vezi Galeria
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -245,9 +245,10 @@ export function FeaturedCategories() {
                 onClick={() => setActiveIndex(i)}
                 className={`transition-all duration-300 rounded-full ${
                   i === activeIndex
-                    ? "w-6 h-1.5 bg-primary"
-                    : "w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400"
+                    ? "w-6 h-2"
+                    : "w-2 h-2 hover:bg-gray-400"
                 }`}
+                style={{ backgroundColor: i === activeIndex ? 'hsl(348, 45%, 42%)' : '#d1d5db' }}
               />
             ))}
           </div>

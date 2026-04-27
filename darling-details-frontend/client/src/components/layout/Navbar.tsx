@@ -1,4 +1,4 @@
-﻿import { Link, useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { NAV_ITEMS, SITE_CONFIG } from "@/lib/constants";
 import { Menu, X, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -63,7 +63,7 @@ export function Navbar() {
                     transparent ? "text-white/70" : "text-gold"
                   )}
                 >
-                  evenimente & decoraÈ›iuni
+                  evenimente & decorațiuni
                 </span>
               </div>
             </ScrollToTopLink>

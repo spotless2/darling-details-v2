@@ -197,7 +197,6 @@ export default function AddProduct() {
                 {/* Custom file input */}
                 <label
                   className="flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-sm cursor-pointer hover:border-primary/40 transition-colors bg-white group"
-                  onClick={() => fileInputRef.current?.click()}
                 >
                   <span className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary text-xs tracking-wider uppercase font-sans rounded-sm group-hover:bg-primary/20 transition-colors whitespace-nowrap">
                     <Upload className="h-3.5 w-3.5" />
