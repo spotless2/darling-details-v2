@@ -5,7 +5,10 @@ console.log('Environment variables:', import.meta.env);
 const getBaseUrl = () => {
   // First, check for the environment variable
   if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+    // VITE_API_URL points to the backend root (e.g. https://api-dd.spotty3.duckdns.org)
+    // Backend mounts all routes under /api, so we must append it
+    const base = import.meta.env.VITE_API_URL.replace(/\/+$/, ''); // trim trailing slash
+    return `${base}/api`;
   }
   
   // If not available, determine dynamically from current location
