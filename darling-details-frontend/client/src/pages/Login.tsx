@@ -125,7 +125,10 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white text-xs tracking-widest uppercase font-sans hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 rounded-sm mt-2"
+              className="w-full flex items-center justify-center gap-2 py-3 text-white text-xs tracking-widest uppercase font-sans disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 rounded-sm mt-2"
+              style={{ backgroundColor: isLoading ? '#a8546b' : '#a8446a' }}
+              onMouseEnter={(e) => { if (!isLoading) (e.currentTarget.style.backgroundColor = '#934060') }}
+              onMouseLeave={(e) => { if (!isLoading) (e.currentTarget.style.backgroundColor = '#a8446a') }}
             >
               {isLoading ? (
                 <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />

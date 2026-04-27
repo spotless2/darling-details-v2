@@ -1,4 +1,4 @@
-﻿import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { storeService } from "@/services";
 import { NAV_ITEMS, SITE_CONFIG } from "@/lib/constants";
 import { Facebook, Instagram, Mail, MapPin, Phone, Heart, ExternalLink } from "lucide-react";
@@ -126,9 +126,17 @@ export function Footer() {
           <p className="text-xs text-white/35">
             Â© {year} {settings?.storeName || SITE_CONFIG.name}. Toate drepturile rezervate.
           </p>
-          <p className="text-xs text-white/25 flex items-center gap-1">
-            Made with <Heart className="h-3 w-3 text-primary/60" /> for special events
-          </p>
+          <div className="flex items-center gap-4">
+            <ScrollToTopLink
+              href="/login"
+              className="text-xs text-white/25 hover:text-gold/70 transition-colors duration-300"
+            >
+              Admin
+            </ScrollToTopLink>
+            <p className="text-xs text-white/25 flex items-center gap-1">
+              Made with <Heart className="h-3 w-3 text-primary/60" /> for special events
+            </p>
+          </div>
         </div>
       </div>
     </footer>
