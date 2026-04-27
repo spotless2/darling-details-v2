@@ -26,6 +26,7 @@ const AdminSettings = lazy(() => import("@/pages/admin/Settings"));
 const AdminCategories = lazy(() => import("@/pages/admin/Categories"));
 const AdminTestimonials = lazy(() => import("@/pages/admin/Testimonials"));
 const AdminHeroSlides = lazy(() => import("@/pages/admin/HeroSlides"));
+const AdminLogin = lazy(() => import("@/pages/admin/Login"));
 
 export function AppRoutes() {
   return (
@@ -41,16 +42,14 @@ export function AppRoutes() {
         {/* Admin Root Redirects */}
         <Route path="/admin">
           {() => {
-            // Redirect to admin panel if authenticated, otherwise to login
-            return authService.isAuthenticated() 
-              ? <Redirect to="/admin/panel" /> 
-              : <Redirect to="/login" />;
+            // Redirect to admin panel if authenticated, otherwise to admin login
+            return authService.isAuthenticated()
+              ? <Redirect to="/admin/panel" />
+              : <Redirect to="/admin/login" />;
           }}
         </Route>
         
-        <Route path="/admin/login">
-          {() => <Redirect to="/login" />}
-        </Route>
+        <Route path="/admin/login" component={AdminLogin} />
 
         {/* Protected Admin Routes */}
         <ProtectedRoute path="/admin/panel" component={AdminDashboard} />

@@ -240,7 +240,7 @@ export default function AddProduct() {
               <button
                 type="submit"
                 disabled={mutation.isPending}
-                className="w-full py-3 bg-primary text-white text-xs tracking-widest uppercase font-sans hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 rounded-sm"
+                className="w-full btn-primary"
               >
                 {mutation.isPending ? "Se salvează..." : "Adaugă în galerie"}
               </button>

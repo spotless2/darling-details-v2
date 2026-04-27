@@ -1,6 +1,15 @@
 // Base API URL - adjust based on environment
 console.log('Environment variables:', import.meta.env);
 
+// Get the backend root URL (without /api)
+export const getBackendUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  }
+  // In dev or when no env var, use relative (same origin)
+  return '';
+};
+
 // Create a function to determine the base URL
 const getBaseUrl = () => {
   // First, check for the environment variable

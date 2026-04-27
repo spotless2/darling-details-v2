@@ -2,19 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { ArrowRight } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { getBackendUrl } from "@/services/apiClient";
+
+const backendUrl = getBackendUrl();
 
 const getImageUrl = (url: string | undefined | null): string => {
   if (!url) return "https://placehold.co/600x600/png?text=No+Image";
-  try {
-    if (import.meta.env.DEV && url.includes("localhost:5173")) {
-      return `http://localhost:3000${new URL(url).pathname}`;
-    }
-    if (!url.startsWith("http")) return `http://localhost:3000${url.startsWith("/") ? "" : "/"}${url}`;
-    return url;
-  } catch {
-    return url;
-  }
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  // Prepend backend URL for relative paths like /uploads/...
+  return `${backendUrl}${url.startsWith("/") ? "" : "/"}${url}`;
 };
 
 const ScrollToTopLink = ({ href, children, className = "" }: any) => {
@@ -40,7 +37,7 @@ export function FeaturedCategories() {
     },
   });
 
-  const { data: productsResponse } = useQuery({
+  const { data: productsResponse, isLoading: loadingProducts } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const r = await fetch("/api/products");
@@ -52,16 +49,24 @@ export function FeaturedCategories() {
   const categories: any[] = categoriesResponse?.data || [];
   const allProducts: any[] = productsResponse?.data || [];
 
-  const groups = [
-    {
-      category: { id: "all", name: "Toate", slug: "toate", description: "Descoperă cele mai noi creații din colecția noastră." },
-      products: allProducts.slice(0, 4),
-    },
-    ...categories.map((cat) => ({
-      category: cat,
-      products: allProducts.filter((p) => p.categoryId === cat.id).slice(0, 4),
-    }))
-  ];
+  const groups = useMemo(
+    () => [
+      {
+        category: {
+          id: "all",
+          name: "Toate produsele",
+          slug: "toate",
+          description: "Descoperă cele mai noi creații din colecția noastră.",
+        },
+        products: allProducts.slice(0, 4),
+      },
+      ...categories.map((cat) => ({
+        category: cat,
+        products: allProducts.filter((p) => p.categoryId === cat.id).slice(0, 4),
+      })),
+    ],
+    [categories, allProducts]
+  );
 
   const navigate = useCallback(
     (dir: number) => {
@@ -71,12 +76,18 @@ export function FeaturedCategories() {
   );
 
   useEffect(() => {
+    if (activeIndex >= groups.length) {
+      setActiveIndex(0);
+    }
+  }, [groups.length, activeIndex]);
+
+  useEffect(() => {
     if (isPaused || groups.length <= 1) return;
     const t = setInterval(() => navigate(1), 5500);
     return () => clearInterval(t);
   }, [navigate, isPaused, groups.length]);
 
-  if (loadingCats) {
+  if (loadingCats || loadingProducts) {
     return (
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

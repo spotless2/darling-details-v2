@@ -21,32 +21,32 @@ const WHY_US = [
     title: "Design Premium",
     description: "Fiecare detaliu este ales cu grijă pentru a crea o atmosferă de poveste la evenimentul tău.",
     colorClass: "text-amber-500",
-    bgClass: "bg-amber-100/50 border-amber-200",
-    hoverBgClass: "group-hover:bg-amber-500 group-hover:border-amber-500",
+    bgClass: "bg-gradient-to-br from-amber-100/80 to-amber-200/60 border-amber-200",
+    hoverBgClass: "group-hover:bg-gradient-to-br group-hover:from-amber-500 group-hover:to-amber-600 group-hover:border-amber-500",
   },
   {
     icon: Heart,
     title: "Personalizare Totală",
     description: "Adaptăm fiecare creație viziunii tale — nimic nu este standard în Darling Details.",
     colorClass: "text-rose-500",
-    bgClass: "bg-rose-100/50 border-rose-200",
-    hoverBgClass: "group-hover:bg-rose-500 group-hover:border-rose-500",
+    bgClass: "bg-gradient-to-br from-rose-100/80 to-rose-200/60 border-rose-200",
+    hoverBgClass: "group-hover:bg-gradient-to-br group-hover:from-rose-500 group-hover:to-rose-600 group-hover:border-rose-500",
   },
   {
     icon: CheckCircle2,
     title: "Calitate Garantată",
     description: "Materiale premium și finisaje impecabile care impresionează fiecare invitat.",
     colorClass: "text-emerald-500",
-    bgClass: "bg-emerald-100/50 border-emerald-200",
-    hoverBgClass: "group-hover:bg-emerald-500 group-hover:border-emerald-500",
+    bgClass: "bg-gradient-to-br from-emerald-100/80 to-emerald-200/60 border-emerald-200",
+    hoverBgClass: "group-hover:bg-gradient-to-br group-hover:from-emerald-500 group-hover:to-emerald-600 group-hover:border-emerald-500",
   },
   {
     icon: Clock,
     title: "Livrare la Timp",
     description: "Respectăm termenele și ne asigurăm că totul este perfect la momentul cel mai important.",
     colorClass: "text-blue-500",
-    bgClass: "bg-blue-100/50 border-blue-200",
-    hoverBgClass: "group-hover:bg-blue-500 group-hover:border-blue-500",
+    bgClass: "bg-gradient-to-br from-sky-100/80 to-blue-200/60 border-sky-200",
+    hoverBgClass: "group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-sky-600 group-hover:border-blue-500",
   },
 ];
 
@@ -101,7 +101,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.6 }}
               >
-                <div className={`w-14 h-14 rounded-full border ${item.bgClass} flex items-center justify-center mx-auto mb-5 ${item.hoverBgClass} transition-all duration-400 shadow-sm group-hover:shadow-md group-hover:-translate-y-1`}>
+                <div className={`w-14 h-14 rounded-full border ${item.bgClass} flex items-center justify-center mx-auto mb-5 ${item.hoverBgClass} transition-all duration-400 shadow-lg shadow-amber-100/40 group-hover:shadow-2xl group-hover:-translate-y-1`}>
                   <item.icon className={`h-6 w-6 ${item.colorClass} group-hover:text-white transition-colors duration-300`} />
                 </div>
                 <h3 className="font-display text-charcoal text-lg mb-2">{item.title}</h3>

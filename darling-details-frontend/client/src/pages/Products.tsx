@@ -4,18 +4,14 @@ import { categoryService, productService } from "@/services";
 import { useState, useEffect } from "react";
 import { ZoomIn, X, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useSearch } from "wouter";
+import { getBackendUrl } from "@/services/apiClient";
+
+const backendUrl = getBackendUrl();
 
 const getImageUrl = (url: string | undefined | null): string => {
   if (!url) return "https://placehold.co/600x600/png?text=No+Image";
-  try {
-    if (import.meta.env.DEV && url.includes("localhost:5173")) {
-      return `http://localhost:3000${new URL(url).pathname}`;
-    }
-    if (!url.startsWith("http")) return `http://localhost:3000${url.startsWith("/") ? "" : "/"}${url}`;
-    return url;
-  } catch {
-    return url;
-  }
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${backendUrl}${url.startsWith("/") ? "" : "/"}${url}`;
 };
 
 export default function Products() {

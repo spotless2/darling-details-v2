@@ -115,6 +115,18 @@
     color: white;
     transform: translateY(-1px);
   }
+
+  /* Primary action button - uses hardcoded color for reliability */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 py-3 text-white text-xs tracking-widest uppercase font-sans font-medium transition-all duration-300 rounded-sm;
+    background-color: hsl(348, 45%, 42%) !important;
+  }
+  .btn-primary:hover {
+    background-color: hsl(348, 45%, 36%) !important;
+  }
+  .btn-primary:disabled {
+    @apply opacity-60 cursor-not-allowed;
+  }
 }
 
 @layer utilities {

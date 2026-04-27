@@ -136,7 +136,7 @@ function SlideForm({ slide, onClose, onSaved }: { slide?: any; onClose: () => vo
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 text-xs tracking-widest uppercase font-sans bg-primary text-white hover:bg-primary/90 disabled:opacity-60 transition-all rounded-sm"
+            className="btn-primary px-5"
           >
             {saving ? "Se salvează..." : <><Check className="h-3.5 w-3.5" /> Salvează</>}
           </button>
@@ -182,7 +182,7 @@ export default function HeroSlides() {
           </div>
           <button
             onClick={() => { setEditSlide(null); setFormOpen(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 text-xs tracking-widest uppercase font-sans bg-primary text-white hover:bg-primary/90 transition-all rounded-sm"
+            className="btn-primary px-5"
           >
             <Plus className="h-4 w-4" />
             Slide Nou
