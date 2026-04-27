@@ -2,10 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { insertContactSchema } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { storeService } from "@/services";
+import { storeService, apiClient } from "@/services";
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form";
@@ -29,8 +28,7 @@ export default function Contact() {
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("POST", "/api/contact", data);
-      return response.json();
+      return await apiClient.post("/contact", data);
     },
     onSuccess: () => {
       toast({ title: "Mesaj trimis!", description: "Vă vom contacta în cel mai scurt timp." });
@@ -247,7 +245,7 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={mutation.isPending}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-primary text-white text-xs tracking-widest uppercase font-sans font-medium hover:bg-primary/90 disabled:opacity-60 transition-all duration-300 hover:-translate-y-0.5"
+                    className="w-full btn-primary py-3.5 hover:-translate-y-0.5"
                   >
                     {mutation.isPending ? (
                       <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
