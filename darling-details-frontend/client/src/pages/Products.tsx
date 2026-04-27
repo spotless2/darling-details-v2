@@ -115,7 +115,7 @@ export default function Products() {
                   onClick={() => setActiveCategory(cat.slug)}
                   className={`px-4 py-1.5 text-xs tracking-widest uppercase font-sans transition-all duration-300 rounded-sm ${
                     activeCategory === cat.slug
-                      ? "bg-primary text-white"
+                      ? "bg-[hsl(348,45%,42%)] text-white"
                       : "border border-gray-200 text-charcoal/60 hover:border-primary/40 hover:text-primary"
                   }`}
                 >

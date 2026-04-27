@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useEffect, useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight, ArrowDown } from "lucide-react";
@@ -157,7 +157,7 @@ export function Hero() {
                     window.scrollTo({ top: 0 });
                     setLocation("/products");
                   }}
-                  className="px-8 py-3.5 bg-primary text-white text-sm tracking-widest uppercase font-sans font-medium hover:bg-primary/90 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-4px_rgba(176,68,88,0.5)]"
+                  className="btn-primary px-8 py-3.5 text-sm hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-4px_rgba(176,68,88,0.5)]"
                 >
                   Descoperă Produsele
                 </button>

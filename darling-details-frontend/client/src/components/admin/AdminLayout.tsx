@@ -56,7 +56,7 @@ function NavItem({ item, isActive, onClick }: any) {
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 text-sm font-sans transition-all duration-200 rounded-sm cursor-pointer group",
           isActive
-            ? "bg-primary text-white"
+            ? "bg-[hsl(348,45%,42%)] text-white"
             : "text-white/60 hover:text-white hover:bg-white/8"
         )}
       >

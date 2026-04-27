@@ -128,7 +128,7 @@ export default function About() {
 
               <ScrollToTopLink
                 href="/contact"
-                className="inline-flex items-center gap-2 px-7 py-3 bg-primary text-white text-xs tracking-widest uppercase font-sans hover:bg-primary/90 transition-all duration-300 hover:-translate-y-0.5"
+                className="btn-primary px-7 hover:-translate-y-0.5"
               >
                 Contactează-ne
                 <Heart className="h-3.5 w-3.5" />

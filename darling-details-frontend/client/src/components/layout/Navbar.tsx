@@ -45,8 +45,8 @@ export function Navbar() {
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <ScrollToTopLink href="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                <Heart className="h-4 w-4 text-primary" />
+              <div className="w-9 h-9 rounded-full bg-[hsl(348,45%,42%,0.1)] border border-[hsl(348,45%,42%,0.2)] flex items-center justify-center group-hover:bg-[hsl(348,45%,42%,0.2)] transition-colors duration-300">
+                <Heart className="h-4 w-4 text-gold" />
               </div>
               <div className="flex flex-col leading-none">
                 <span
@@ -160,8 +160,8 @@ export function Navbar() {
                         className={cn(
                           "block px-4 py-3 text-sm tracking-[0.12em] uppercase font-sans font-medium rounded-sm transition-all",
                           active
-                            ? "bg-primary/10 text-primary"
-                            : "text-charcoal/70 hover:text-primary hover:bg-primary/5"
+                            ? "bg-[hsl(348,45%,42%,0.1)] text-[hsl(348,45%,42%)]"
+                            : "text-charcoal/70 hover:text-[hsl(348,45%,42%)] hover:bg-[hsl(348,45%,42%,0.05)]"
                         )}
                         onClick={() => setIsOpen(false)}
                       >
@@ -174,7 +174,7 @@ export function Navbar() {
               <div className="px-6 pb-8">
                 <ScrollToTopLink
                   href="/contact"
-                  className="block text-center px-6 py-3 text-xs tracking-widest uppercase font-sans font-medium bg-primary text-white hover:bg-primary/90 transition-colors"
+                  className="block text-center px-6 py-3 text-xs tracking-widest uppercase font-sans font-medium transition-colors btn-primary"
                   onClick={() => setIsOpen(false)}
                 >
                   Rezervă Acum
