@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Store, Mail, Phone, Settings2, BookOpen, Search } from "lucide-react";
+import { Store, Mail, Phone, Settings2, BookOpen, Search, MapPin } from "lucide-react";
 
 // Updated schema to match API field names including new dynamic text fields
 const storeSettingsSchema = z.object({
@@ -48,6 +48,7 @@ const storeSettingsSchema = z.object({
   aboutStory: z.string().optional(),
   aboutMission: z.string().optional(),
   aboutVision: z.string().optional(),
+  mapEmbedUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof storeSettingsSchema>;
@@ -74,6 +75,7 @@ export default function Settings() {
       aboutStory: "",
       aboutMission: "",
       aboutVision: "",
+      mapEmbedUrl: "",
     },
   });
 
@@ -110,6 +112,7 @@ export default function Settings() {
         aboutStory: settings.aboutStory || "",
         aboutMission: settings.aboutMission || "",
         aboutVision: settings.aboutVision || "",
+        mapEmbedUrl: settings.mapEmbedUrl || "",
       });
     }
   }, [settingsResponse, form]);
@@ -283,6 +286,37 @@ export default function Settings() {
                         )}
                       />
                     </div>
+                  </div>
+
+                  {/* Map Embed */}
+                  <div className="space-y-6 pt-4">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <h2 className="text-xl font-medium">Hartă Google Maps</h2>
+                    </div>
+                    <Separator />
+
+                    <FormField
+                      control={form.control}
+                      name="mapEmbedUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL Embed Hartă (Google Maps)</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="min-h-[80px] font-mono text-xs"
+                              placeholder="https://www.google.com/maps/embed?pb=..."
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <p className="text-xs text-charcoal/40 mt-1">
+                            Deschide Google Maps → Caută locația → Share → Embed a map → Copiază doar URL-ul din src="..."
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   {/* Social Media */}

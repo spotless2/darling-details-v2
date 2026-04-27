@@ -143,13 +143,15 @@ export default function Contact() {
               )}
 
               {/* Map */}
-              <div className="aspect-[4/3] overflow-hidden rounded-sm border border-gray-200">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d899.705052314709!2d24.415240569670644!3d43.99892436292056!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDPCsDU5JzU2LjEiTiAyNMKwMjQnNTcuMiJF!5e1!3m2!1sen!2sro!4v1746236816831!5m2!1sen!2sro"
-                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                  className="grayscale hover:grayscale-0 transition-all duration-500"
-                />
-              </div>
+              {settings?.mapEmbedUrl && (
+                <div className="aspect-[4/3] overflow-hidden rounded-sm border border-gray-200">
+                  <iframe
+                    src={settings.mapEmbedUrl}
+                    width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                    className="grayscale hover:grayscale-0 transition-all duration-500"
+                  />
+                </div>
+              )}
             </motion.div>
 
             {/* Right: form */}

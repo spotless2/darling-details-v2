@@ -65,6 +65,10 @@ const StoreSettings = sequelize.define('StoreSettings', {
   aboutVision: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  mapEmbedUrl: {
+    type: DataTypes.TEXT,
+    allowNull: true
   }
 });
 
