@@ -35,7 +35,7 @@ export default function Products() {
     queryFn: async () => {
       const p: any = { page, limit: 24 };
       if (activeCategory) p.categorySlug = activeCategory;
-      if (searchQuery) p.search = searchQuery;
+      if (searchQuery) p.name = searchQuery;
       return await productService.getProducts(p);
     },
   });

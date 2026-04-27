@@ -132,7 +132,7 @@ export function FeaturedCategories() {
           </div>
           <ScrollToTopLink
             href="/products"
-            className="flex items-center gap-2 text-sm tracking-wider uppercase font-sans text-primary hover:text-primary/70 transition-colors border-b border-primary/30 hover:border-primary pb-0.5 self-end"
+            className="flex items-center gap-2 text-sm tracking-wider uppercase font-sans text-[hsl(348,45%,42%)] hover:text-[hsl(348,45%,42%,0.7)] transition-colors border-b border-[hsl(348,45%,42%,0.3)] hover:border-[hsl(348,45%,42%)] pb-0.5 self-end"
           >
             Vezi toate produsele
             <ArrowRight className="h-4 w-4" />
